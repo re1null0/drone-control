@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
-import rospy
+import rclpy
+from rclpy.node import Node
 import numpy as np
 import cv2
 from visualization_msgs.msg import Marker, MarkerArray
@@ -9,22 +10,28 @@ from nav_msgs.msg import OccupancyGrid
 from sensor_msgs.msg import Image
 from cv_bridge import CvBridge
 
-class VisualizationCollision:
+class VisualizationCollision(Node):
     def __init__(self):
+        super().__init__('visualization_collision')
+        
         # Initialize visualization publishers
-        self.tree_viz_pub = rospy.Publisher('/rrt_tree', MarkerArray, queue_size=10)
-        self.path_viz_pub = rospy.Publisher('/rrt_path', Marker, queue_size=10)
-        self.map_update_pub = rospy.Publisher('/map_updated', OccupancyGrid, queue_size=10)
+        self.tree_viz_pub = self.create_publisher(MarkerArray, '/rrt_tree', 10)
+        self.path_viz_pub = self.create_publisher(Marker, '/rrt_path', 10)
+        self.map_update_pub = self.create_publisher(OccupancyGrid, '/map_updated', 10)
         
         # Initialize CV bridge for image processing
         self.bridge = CvBridge()
         
         # Subscribe to camera feed
-        self.image_sub = rospy.Subscriber('/camera/image_raw', Image, self.process_camera_data)
+        self.image_sub = self.create_subscription(
+            Image, 
+            '/camera/image_raw', 
+            self.process_camera_data, 
+            10)
         
         # Initialize map
         self.map_updated_ = None
-        
+
     def visualize_rrt(self, path=None, tree=None):
         """
         Visualize the RRT tree and path
@@ -37,7 +44,7 @@ class VisualizationCollision:
         # Tree nodes marker
         nodes_marker = Marker()
         nodes_marker.header.frame_id = "map"
-        nodes_marker.header.stamp = rospy.Time.now()
+        nodes_marker.header.stamp = self.get_clock().now().to_msg()
         nodes_marker.ns = "tree_nodes"
         nodes_marker.id = 0
         nodes_marker.type = Marker.POINTS
@@ -52,7 +59,7 @@ class VisualizationCollision:
         # Tree branches marker
         branches_marker = Marker()
         branches_marker.header.frame_id = "map"
-        branches_marker.header.stamp = rospy.Time.now()
+        branches_marker.header.stamp = self.get_clock().now().to_msg()
         branches_marker.ns = "tree_branches"
         branches_marker.id = 1
         branches_marker.type = Marker.LINE_LIST
@@ -97,7 +104,7 @@ class VisualizationCollision:
         if path:
             path_marker = Marker()
             path_marker.header.frame_id = "map"
-            path_marker.header.stamp = rospy.Time.now()
+            path_marker.header.stamp = self.get_clock().now().to_msg()
             path_marker.ns = "path"
             path_marker.id = 2
             path_marker.type = Marker.LINE_STRIP
@@ -116,7 +123,7 @@ class VisualizationCollision:
                 path_marker.points.append(p)
                 
             self.path_viz_pub.publish(path_marker)
-            
+    
     def process_camera_data(self, image_msg):
         """
         Process camera data to detect obstacles and update the occupancy grid
@@ -163,4 +170,14 @@ class VisualizationCollision:
             self.map_update_pub.publish(self.map_updated_)
             
         except Exception as e:
-            rospy.logerr(f"Error processing camera data: {e}")
+            self.get_logger().error(f"Error processing camera data: {e}")
+
+def main(args=None):
+    rclpy.init(args=args)
+    visualization_collision = VisualizationCollision()
+    rclpy.spin(visualization_collision)
+    visualization_collision.destroy_node()
+    rclpy.shutdown()
+
+if __name__ == '__main__':
+    main()
