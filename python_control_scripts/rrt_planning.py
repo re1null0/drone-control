@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 
+import rclpy
+from rclpy.node import Node
 import numpy as np
-from scipy.spatial import KDTree
 from geometry_msgs.msg import Point
 from nav_msgs.msg import OccupancyGrid
 from visualization_msgs.msg import Marker, MarkerArray
-import rospy
 
 class NodeRRT:
     """
@@ -26,10 +26,10 @@ class RRT:
         self.sample_range_y = 5.0
         self.current_pose = None
         self.map_updated_ = None
-        
+
     def sample(self):
         """
-        Sample a random point in free space within corridor boundaries 
+        Sample a random point in free space within corridor boundaries
         and a certain distance ahead of the car.
         """
         # Maximum attempts to find a valid point
