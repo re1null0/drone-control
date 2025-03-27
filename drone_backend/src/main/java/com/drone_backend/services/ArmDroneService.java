@@ -14,18 +14,14 @@ public class ArmDroneService {
 
     public boolean armDrone(int armStatus){
         // Create the command string
-        Path currentPath = FileSystems.getDefault().getPath(".").toAbsolutePath();
-        String scriptPath = currentPath.toString().substring(0, currentPath.toString().length()-15);
-        scriptPath += "python_control_scripts";
-        scriptPath += "/my_arm_script.py";
-        String cmdStr = "python2.7 " + scriptPath;
-        // add --arm_status arg
-        String armStatusStr = " --arm_status";
-        armStatusStr += " " + String.valueOf(armStatus);
+        Path projectRoot = FileSystems.getDefault().getPath("").toAbsolutePath().getParent(); // go up one level
+        Path scriptPath = projectRoot.resolve("python_control_scripts/my_arm_script.py");
+        String cmdStr = "python3 " + scriptPath + " --arm_status " + armStatus;
 
-        cmdStr += armStatusStr;
+
 
         // Call the script from the command line
+
         return commandLineService.runOnCommandLine(cmdStr);
     }
 }
