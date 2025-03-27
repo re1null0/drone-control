@@ -17,30 +17,13 @@ import waypoint_traj
 import se3_control
 
 # This object defines the quadrotor dynamical model and should not be changed.
-quadrotor = Quadrotor(quad_params)
+quadrotor = Quadrotor(quad_params) # GIVEN
 
 # You will complete the implementation of the SE3Control object.
-my_se3_control = se3_control.SE3Control(quad_params)
-t_final = 20
+my_se3_control = se3_control.SE3Control(quad_params) # GIVEN
+t_final = 20 # CEDRIC GOT IT
 t_array = np.linspace(0, t_final, t_final)
 
-# This simple hover trajectory is useful for tuning control gains.
-# my_traj = hover_traj.HoverTraj()
-def custom_trajectory(t):
-    """
-    This function is used to define a custom trajectory. It is not used in the simulation.
-    """
-    # STUDENT CODE HERE
-    x = 0.05 * np.sin(2 * t) + 0.1 * t
-    y = 0.075 * np.cos(3 * t) - 0.2 * t
-    z = 0.15 * t - np.cos(t /3)
-    return np.array([x, y, z])
-
-# custom_points = custom_trajectory(t_array)
-# my_traj = waypoint_traj.WaypointTraj(custom_points)
-
-# You will complete the implementation of the WaypointTraj object. It should
-# work for any list of 3D coordinates, such as this example:
 points = np.array([
     [0, 0, 0],
     [1.5, 0, 0],
@@ -56,14 +39,14 @@ points = np.array([
 my_traj = waypoint_traj.WaypointTraj(points)
 
 # Set simulation parameters.
-#
-# You may use the initial condition and a simple hover trajectory to examine the
-# step response of your controller to an initial disturbance in position or
-# orientation.
-
+'''IGNORE'''
 w = 2
 world = World.empty((-w, w, -w, w, -w, w))
 
+''' x: x,y,z position at t=0
+    v: x,y,z velocity at t=0
+    q: quaternion - for orientation information at t=0 -- cedric about to give a converter
+    w: x,y,z angular velocity at t=0'''
 initial_state = {'x': np.array([1, 1, 1]),
                  'v': np.zeros(3,),
                  'q': np.array([0, 0, 0, 1]), # [i,j,k,w]
@@ -76,11 +59,11 @@ initial_state = {'x': np.array([1, 1, 1]),
 # the flat outputs calculated by you trajectory.
 
 print('Simulate.')
-(time, state, control, flat, exit) = simulate(initial_state,
-                                              quadrotor,
-                                              my_se3_control,
-                                              my_traj,
-                                              t_final)
+(time, state, control, flat, exit) = simulate(initial_state, # Needs an input   
+                                              quadrotor,     # Always the same
+                                              my_se3_control,# Always the same
+                                              my_traj,       # Needs an input (Cedric got it)
+                                              t_final)       # Cedric got it
 print(exit.value)
 
 # Plot Results

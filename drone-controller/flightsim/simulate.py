@@ -23,9 +23,9 @@ def simulate(initial_state, quadrotor, controller, trajectory, t_final, terminat
 
     Inputs:
         initial_state, a dict defining the quadrotor initial conditions with keys
-            x, position, m, shape=(3,)
-            v, linear velocity, m/s, shape=(3,)
-            q, quaternion [i,j,k,w], shape=(4,)
+            x, position, m,             shape=(3,)
+            v, linear velocity, m/s,    shape=(3,)
+            q, quaternion [i, j, k, w], shape=(4,)
             w, angular velocity, rad/s, shape=(3,)
         quadrotor, Quadrotor object
         controller, SE3Control object
