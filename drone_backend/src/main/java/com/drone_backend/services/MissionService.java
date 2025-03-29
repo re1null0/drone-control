@@ -20,7 +20,7 @@ public class MissionService {
         String scriptPath = currentPath.toString().substring(0, currentPath.toString().length()-15);
         scriptPath += "python_control_scripts";
         scriptPath += "/my_mission_script.py";
-        String cmdStr = "python2.7 " + scriptPath;
+        String cmdStr = "python3 " + scriptPath;
         // add --positions args
         String posStr = " --positions";
         for(int i = 0; i < positions.size(); i++){ //note that order of position elements matters

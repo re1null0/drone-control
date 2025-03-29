@@ -11,6 +11,13 @@ import numpy as np
 import argparse
 from nav_msgs.msg import OccupancyGrid
 import time
+import sys, os
+from drone_controller.flightsim.simulate import simulate, Quadrotor
+
+from drone_controller.flightsim.drone_params import quad_params
+
+
+
 
 # Import from RRT-Planning-Script.py
 from RRT_Planning_Script import RRT, NodeRRT
@@ -282,6 +289,67 @@ class CustomController(Node):
 
             await self.rate.sleep()
 
+
+# custom PID controller
+
+    # async def run_controller(self):
+    #     quadrotor = Quadrotor(quad_params)
+
+    #     initial_position = self.get_initial_pose_state()
+    #     my_se3_control = se3_control.SE3Control(quad_params) # GIVEN
+    #     points = np.array([
+    #         [0, 0, 0],
+    #         [1.5, 0, 0],
+    #         [1.5, 1.5, 0],
+    #         [1.5, 1.5, 1.5],
+    #         [-1.5, 1.5, 1.5],
+    #         [-1.5, 1.5, -1.5],
+    #         [-1.5, 1.5, -1.5],
+    #         [-1.5, 0, -1.5],
+    #         [0, 0, -1.5],
+    #         [0, 0, 0]
+    #     ])
+    #     my_traj = waypoint_traj.WaypointTraj(points)
+    #     t_final = 60
+
+
+    #     (time, state, control, flat, exit_status) = simulate(initial_position, quadrotor, my_se3_control, my_traj, t_final)
+
+
+
+    # def get_initial_pose_state(self):
+    #     """
+    #         Returns a dictionary with the drone's initial:
+    #         - Position (x, y, z)
+    #         - Velocity (vx, vy, vz)
+    #         - Orientation quaternion (qx, qy, qz, qw)
+    #         - Angular velocity (wx, wy, wz)
+
+    #         Assumes self.local_position has been populated and the appropriate IMU/velocity data is stored.`
+    #     """
+    #     try:
+    #         pos = self.local_position.pose.position
+    #         orient = self.local_position.pose.orientation
+
+    #         # You may need to store these yourself via subscribers (if not already available)
+    #         # e.g., self.latest_velocity from /mavros/local_position/velocity_local
+    #         #       self.latest_imu from /mavros/imu/data
+
+    #         vx, vy, vz = self.latest_velocity.twist.linear.x, self.latest_velocity.twist.linear.y, self.latest_velocity.twist.linear.z
+    #         wx, wy, wz = self.latest_imu.angular_velocity.x, self.latest_imu.angular_velocity.y, self.latest_imu.angular_velocity.z
+
+    #         return {
+    #             "position": (pos.x, pos.y, pos.z),
+    #             "velocity": (vx, vy, vz),
+    #             "quaternion": (orient.x, orient.y, orient.z, orient.w),
+    #             "angular_velocity": (wx, wy, wz)
+    #         }
+
+    #     except AttributeError:
+    #         self.get_logger().warn("Initial pose state data not yet fully available.")
+    #         return None
+
+
     async def position_control(self, positions, vel_lin, vel_ang):
         """
         Original position control method (without RRT)
@@ -318,6 +386,35 @@ class CustomController(Node):
                 break
 
             await self.rate.sleep()
+
+
+    async def execute_mission(self, positions, vel_lin, vel_ang, use_rrt=False):
+        """
+        Executes a full mission by flying through all waypoints in order.
+        """
+        self.get_logger().info("Initializing mission...")
+        self.checkForTopics()
+
+        services_ready = await self.checkForServices()
+        if not services_ready:
+            self.get_logger().error("Service initialization failed.")
+            return
+
+        fcu_ready = await self.checkForFCU()
+        if not fcu_ready:
+            self.get_logger().error("FCU connection failed.")
+            return
+
+        self.get_logger().info("Starting mission...")
+
+        if use_rrt:
+            await self.rrt_position_control(positions, vel_lin, vel_ang)
+        else:
+            await self.position_control(positions, vel_lin, vel_ang)
+
+        self.get_logger().info("Mission completed.")
+
+
 
     async def checkForServices(self):
         """
@@ -443,3 +540,24 @@ def parsePositions():
         for i in range(0,len(positions)-2, 3):
             x = positions[i]
             y = positions
+
+    return args
+
+def main(args=None):
+    rclpy.init(args=args)
+    args = parsePositions()
+    pos_floats = args.positions
+    pos_tuples = list(zip(pos_floats[::3], pos_floats[1::3], pos_floats[2::3]))
+    vel_lin = args.linear_velocity
+    vel_ang = args.angular_velocity
+    use_rrt = args.use_rrt
+
+
+    controller = CustomController()
+    try:
+        rclpy.spin_until_future_complete(controller, controller.execute_mission(pos_tuples, vel_lin, vel_ang, use_rrt))
+    except KeyboardInterrupt:
+        controller.get_logger().info("Mission aborted by user.")
+    finally:
+        controller.destroy_node()
+        rclpy.shutdown()
