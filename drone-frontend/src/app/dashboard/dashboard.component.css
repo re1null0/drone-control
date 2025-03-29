@@ -1,0 +1,179 @@
+:root {
+    --primary-color: #2563eb;
+    --accent-color: #f97316;
+    --warning-color: #facc15;
+    --background-light: #ffffff;
+    --panel-light: #f9fafb;
+    --text-dark: #111827;
+    --text-muted: #6b7280;
+  }
+  
+  body {
+    margin: 0;
+    font-family: 'Poppins';
+    background-color: var(--background-light);
+    color: var(--text-dark);
+  }
+  
+  .dashboard-container {
+    padding: 20px;
+    background-color: var(--background-light);
+  }
+  
+  .header {
+    text-align: center;
+    margin-bottom: 60px;
+    margin-top: 10px;
+  }
+  
+  .logo-img {
+    max-width: 350px;
+    height: auto;
+  }
+  
+  /* Main layout */
+  .main-content {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 20px;
+  }
+  
+  /* Left Panel */
+  .left-panel {
+    flex: 1 1 320px;
+    background-color: var(--panel-light);
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  }
+  
+  .ui-panel label {
+    font-weight: 600;
+    margin-top: 10px;
+    display: block;
+  }
+  
+  .btn {
+    padding: 10px;
+    border: none;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    width: 100%;
+    margin-bottom: 10px;
+  }
+  
+  .arm-btn {
+    background-color: #75bfe9;
+    color: black;
+  }
+  
+  .disarm-btn {
+    background-color: #4975ee;
+    color: black;
+  }
+  
+  .upload-btn {
+    background-color: #2563eb;
+    color: black;
+  }
+  
+  .form-group {
+    margin-top: 8px;
+    margin-bottom: 16px;
+  }
+  
+  input, select {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 14px;
+    background-color: white;
+  }
+  
+  input[type="range"] {
+    width: 100%;
+  }
+  
+  /* Icon input style */
+  .icon-input {
+    position: relative;
+  }
+  
+  .input-icon {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-muted);
+  }
+  
+  /* Right Panel */
+  .right-panel {
+    flex: 2 1 600px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  
+  /* Panels inside right section */
+  .light-panel {
+    background-color: var(--panel-light);
+    padding: 16px;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  }
+  
+  .map-section .map {
+    width: 100%;
+    height: 40vh;
+  }
+  
+  .data-section {
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+  }
+  
+  .data-section img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 6px;
+  }
+  
+  /* Compact Google Map */
+.map-section .map {
+    width: 100%;
+    height: 30vh;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  }
+  
+  /* Boxed SLAM & Camera Panels */
+  .data-section {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+  
+  .panel-box {
+    flex: 1 1 45%;
+    background-color: var(--panel-light);
+    padding: 16px;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  }
+  
+  .panel-box h4 {
+    margin-top: 0;
+    font-size: 16px;
+    color: var(--text-dark);
+  }
+  
+  .panel-box img {
+    width: 100%;
+    border-radius: 6px;
+    margin-top: 10px;
+  }

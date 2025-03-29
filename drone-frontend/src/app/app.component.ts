@@ -29,41 +29,41 @@ export class AppComponent implements OnInit {
     
   });
 
-  surveillanceFormALL = new FormGroup({
-    positions: new FormControl(''),
-    altitude: new FormControl(''),
-    linearVelocity: new FormControl(''),
-    angularVelocity: new FormControl(''),
-    numTour: new FormControl(''),
-  });
+  // surveillanceFormALL = new FormGroup({
+  //   positions: new FormControl(''),
+  //   altitude: new FormControl(''),
+  //   linearVelocity: new FormControl(''),
+  //   angularVelocity: new FormControl(''),
+  //   numTour: new FormControl(''),
+  // });
 
-  hoverFormALL = new FormGroup({
-    positions: new FormControl(''),
-    altitude: new FormControl(''),
-    linearVelocity: new FormControl(''),
-    angularVelocity: new FormControl(''),
-    duration: new FormControl(''),
-  });
+  // hoverFormALL = new FormGroup({
+  //   positions: new FormControl(''),
+  //   altitude: new FormControl(''),
+  //   linearVelocity: new FormControl(''),
+  //   angularVelocity: new FormControl(''),
+  //   duration: new FormControl(''),
+  // });
 
-  missionFormNED = new FormGroup({
-    positions: new FormControl(''),
-    linearVelocity: new FormControl(''),
-    angularVelocity: new FormControl(''),
-  });
+  // missionFormNED = new FormGroup({
+  //   positions: new FormControl(''),
+  //   linearVelocity: new FormControl(''),
+  //   angularVelocity: new FormControl(''),
+  // });
 
-  surveillanceFormNED = new FormGroup({
-    positions: new FormControl(''),
-    linearVelocity: new FormControl(''),
-    angularVelocity: new FormControl(''),
-    numTour: new FormControl(''),
-  });
+  // surveillanceFormNED = new FormGroup({
+  //   positions: new FormControl(''),
+  //   linearVelocity: new FormControl(''),
+  //   angularVelocity: new FormControl(''),
+  //   numTour: new FormControl(''),
+  // });
 
-  hoverFormNED = new FormGroup({
-    positions: new FormControl(''),
-    linearVelocity: new FormControl(''),
-    angularVelocity: new FormControl(''),
-    duration: new FormControl(''),
-  });
+  // hoverFormNED = new FormGroup({
+  //   positions: new FormControl(''),
+  //   linearVelocity: new FormControl(''),
+  //   angularVelocity: new FormControl(''),
+  //   duration: new FormControl(''),
+  // });
 
 
 
@@ -84,131 +84,131 @@ export class AppComponent implements OnInit {
     }
     
     //make POST request to server for /missionUpload
-    let url = "http://localhost:8080/uploadALLMission"; //TODO: change localhost 
+    let url = "http://localhost:8080/uploadALLMission";
     this.http.post(url, missionRequestTemplate).toPromise().then((data:any) => {
       console.log(data)
     })
 
   }
 
-  onSubmitSurveillanceALL() {
-     //convert positions form value to the desired array format
-    let posArray:any = [];
-    let pos:any = this.surveillanceFormALL.value.positions.split(" ")
-    for(let i = 0; i < pos.length; i++){
-      posArray.push(pos[i]) 
-    }
+  // onSubmitSurveillanceALL() {
+  //    //convert positions form value to the desired array format
+  //   let posArray:any = [];
+  //   let pos:any = this.surveillanceFormALL.value.positions.split(" ")
+  //   for(let i = 0; i < pos.length; i++){
+  //     posArray.push(pos[i]) 
+  //   }
     
-    // POST request body
-    let surveillanceRequestTemplate = {
-      positions: posArray,
-      altitude: this.missionFormALL.value.altitude,
-      linear_velocity: this.surveillanceFormALL.value.linearVelocity,
-      angular_velocity: this.surveillanceFormALL.value.angularVelocity,
-      tour_num: this.surveillanceFormALL.value.numTour
-    }
+  //   // POST request body
+  //   let surveillanceRequestTemplate = {
+  //     positions: posArray,
+  //     altitude: this.missionFormALL.value.altitude,
+  //     linear_velocity: this.surveillanceFormALL.value.linearVelocity,
+  //     angular_velocity: this.surveillanceFormALL.value.angularVelocity,
+  //     tour_num: this.surveillanceFormALL.value.numTour
+  //   }
     
-    //make POST request to server for /surveillanceUpload
-    let url = "http://localhost:8080/uploadALLSurveillance"; //TODO: change localhost 
-    this.http.post(url, surveillanceRequestTemplate).toPromise().then((data:any) => {
-      console.log(data)
-    })
-  }
+  //   //make POST request to server for /surveillanceUpload
+  //   let url = "http://localhost:8080/uploadALLSurveillance"; //TODO: change localhost 
+  //   this.http.post(url, surveillanceRequestTemplate).toPromise().then((data:any) => {
+  //     console.log(data)
+  //   })
+  // }
 
-  onSubmitHoverALL() {
-    //convert positions form value to the desired array format
-    let posArray:any = [];
-    let pos:any = this.hoverFormALL.value.positions.split(" ")
-    for(let i = 0; i < pos.length; i++){
-      posArray.push(pos[i]) 
-    }
+  // onSubmitHoverALL() {
+  //   //convert positions form value to the desired array format
+  //   let posArray:any = [];
+  //   let pos:any = this.hoverFormALL.value.positions.split(" ")
+  //   for(let i = 0; i < pos.length; i++){
+  //     posArray.push(pos[i]) 
+  //   }
     
-    // POST request body
-    let hoverRequestTemplate = {
-      positions: posArray,
-      altitude: this.missionFormALL.value.altitude,
-      linear_velocity: this.hoverFormALL.value.linearVelocity,
-      angular_velocity: this.hoverFormALL.value.angularVelocity,
-      duration: this.hoverFormALL.value.duration
-    }
+  //   // POST request body
+  //   let hoverRequestTemplate = {
+  //     positions: posArray,
+  //     altitude: this.missionFormALL.value.altitude,
+  //     linear_velocity: this.hoverFormALL.value.linearVelocity,
+  //     angular_velocity: this.hoverFormALL.value.angularVelocity,
+  //     duration: this.hoverFormALL.value.duration
+  //   }
     
-    //make POST request to server for /hoverUpload
-    let url = "http://localhost:8080/uploadALLHover"; //TODO: change localhost 
-    this.http.post(url, hoverRequestTemplate).toPromise().then((data:any) => {
-      console.log(data)
-    })
-  }
+  //   //make POST request to server for /hoverUpload
+  //   let url = "http://localhost:8080/uploadALLHover"; //TODO: change localhost 
+  //   this.http.post(url, hoverRequestTemplate).toPromise().then((data:any) => {
+  //     console.log(data)
+  //   })
+  // }
 
 
 
-  onSubmitMissionNED() {
-    //convert positions form value to the desired array format
-    let posArray:any = [];
-    let pos:any = this.missionFormNED.value.positions.split(" ")
-    for(let i = 0; i < pos.length; i++){
-      posArray.push(pos[i]) 
-    }
+  // onSubmitMissionNED() {
+  //   //convert positions form value to the desired array format
+  //   let posArray:any = [];
+  //   let pos:any = this.missionFormNED.value.positions.split(" ")
+  //   for(let i = 0; i < pos.length; i++){
+  //     posArray.push(pos[i]) 
+  //   }
     
-    // POST request body
-    let missionRequestTemplate = {
-      positions: posArray,
-      linear_velocity: this.missionFormNED.value.linearVelocity,
-      angular_velocity: this.missionFormNED.value.angularVelocity
-    }
+  //   // POST request body
+  //   let missionRequestTemplate = {
+  //     positions: posArray,
+  //     linear_velocity: this.missionFormNED.value.linearVelocity,
+  //     angular_velocity: this.missionFormNED.value.angularVelocity
+  //   }
     
-    //make POST request to server for /missionUpload
-    let url = "http://localhost:8080/uploadMission"; //TODO: change localhost 
-    this.http.post(url, missionRequestTemplate).toPromise().then((data:any) => {
-      console.log(data)
-    })
+  //   //make POST request to server for /missionUpload
+  //   let url = "http://localhost:8080/uploadMission"; //TODO: change localhost 
+  //   this.http.post(url, missionRequestTemplate).toPromise().then((data:any) => {
+  //     console.log(data)
+  //   })
 
-  }
+  // }
 
-  onSubmitSurveillanceNED() {
-     //convert positions form value to the desired array format
-    let posArray:any = [];
-    let pos:any = this.surveillanceFormNED.value.positions.split(" ")
-    for(let i = 0; i < pos.length; i++){
-      posArray.push(pos[i]) 
-    }
+  // onSubmitSurveillanceNED() {
+  //    //convert positions form value to the desired array format
+  //   let posArray:any = [];
+  //   let pos:any = this.surveillanceFormNED.value.positions.split(" ")
+  //   for(let i = 0; i < pos.length; i++){
+  //     posArray.push(pos[i]) 
+  //   }
     
-    // POST request body
-    let surveillanceRequestTemplate = {
-      positions: posArray,
-      linear_velocity: this.surveillanceFormNED.value.linearVelocity,
-      angular_velocity: this.surveillanceFormNED.value.angularVelocity,
-      tour_num: this.surveillanceFormNED.value.numTour
-    }
+  //   // POST request body
+  //   let surveillanceRequestTemplate = {
+  //     positions: posArray,
+  //     linear_velocity: this.surveillanceFormNED.value.linearVelocity,
+  //     angular_velocity: this.surveillanceFormNED.value.angularVelocity,
+  //     tour_num: this.surveillanceFormNED.value.numTour
+  //   }
     
-    //make POST request to server for /surveillanceUpload
-    let url = "http://localhost:8080/uploadSurveillance"; //TODO: change localhost 
-    this.http.post(url, surveillanceRequestTemplate).toPromise().then((data:any) => {
-      console.log(data)
-    })
-  }
+  //   //make POST request to server for /surveillanceUpload
+  //   let url = "http://localhost:8080/uploadSurveillance"; //TODO: change localhost 
+  //   this.http.post(url, surveillanceRequestTemplate).toPromise().then((data:any) => {
+  //     console.log(data)
+  //   })
+  // }
 
-  onSubmitHoverNED() {
-    //convert positions form value to the desired array format
-    let posArray:any = [];
-    let pos:any = this.hoverFormNED.value.positions.split(" ")
-    for(let i = 0; i < pos.length; i++){
-      posArray.push(pos[i]) 
-    }
+  // onSubmitHoverNED() {
+  //   //convert positions form value to the desired array format
+  //   let posArray:any = [];
+  //   let pos:any = this.hoverFormNED.value.positions.split(" ")
+  //   for(let i = 0; i < pos.length; i++){
+  //     posArray.push(pos[i]) 
+  //   }
     
-    // POST request body
-    let hoverRequestTemplate = {
-      positions: posArray,
-      linear_velocity: this.hoverFormNED.value.linearVelocity,
-      angular_velocity: this.hoverFormNED.value.angularVelocity,
-      duration: this.hoverFormNED.value.duration
-    }
+  //   // POST request body
+  //   let hoverRequestTemplate = {
+  //     positions: posArray,
+  //     linear_velocity: this.hoverFormNED.value.linearVelocity,
+  //     angular_velocity: this.hoverFormNED.value.angularVelocity,
+  //     duration: this.hoverFormNED.value.duration
+  //   }
     
-    //make POST request to server for /hoverUpload
-    let url = "http://localhost:8080/uploadHover"; //TODO: change localhost 
-    this.http.post(url, hoverRequestTemplate).toPromise().then((data:any) => {
-      console.log(data)
-    })
-  }
+  //   //make POST request to server for /hoverUpload
+  //   let url = "http://localhost:8080/uploadHover"; //TODO: change localhost 
+  //   this.http.post(url, hoverRequestTemplate).toPromise().then((data:any) => {
+  //     console.log(data)
+  //   })
+  // }
 
   onSubmitArmDrone(arm_status:number) {
     
@@ -261,8 +261,6 @@ export class AppComponent implements OnInit {
 
     
   }
-
-
 
   // callback function that draws markers on the clicked position
   placeMarkerAndPanTo(latLng: google.maps.LatLng, map: google.maps.Map):void {
@@ -387,28 +385,29 @@ export class AppComponent implements OnInit {
       this.missionFormALL.patchValue({
         positions: posStr
       })
-    }else if(this.selectedMissionType == "surveillanceMode"){
-      let posStr:String = ""
-      this.markers.forEach((m => {
-        const cur_lat = m.getPosition()?.lat();
-        const cur_lng = m.getPosition()?.lng();
+    // }else if(this.selectedMissionType == "surveillanceMode"){
+    //   let posStr:String = ""
+    //   this.markers.forEach((m => {
+    //     const cur_lat = m.getPosition()?.lat();
+    //     const cur_lng = m.getPosition()?.lng();
         
-        posStr += `${cur_lat} ${cur_lng} `
-      }))
-      this.surveillanceFormALL.patchValue({
-        positions: posStr
-      })
-    }else if(this.selectedMissionType == "hoverMode"){
-      let posStr:String = ""
-      this.markers.forEach((m => {
-        const cur_lat = m.getPosition()?.lat();
-        const cur_lng = m.getPosition()?.lng();
+    //     posStr += `${cur_lat} ${cur_lng} `
+    //   }))
+    //   this.surveillanceFormALL.patchValue({
+    //     positions: posStr
+    //   })
+    // }else if(this.selectedMissionType == "hoverMode"){
+    //   let posStr:String = ""
+    //   this.markers.forEach((m => {
+    //     const cur_lat = m.getPosition()?.lat();
+    //     const cur_lng = m.getPosition()?.lng();
         
-        posStr += `${cur_lat} ${cur_lng} `
-      }))
-      this.hoverFormALL.patchValue({
-        positions: posStr
-      })
+    //     posStr += `${cur_lat} ${cur_lng} `
+    //   }))
+    //   this.hoverFormALL.patchValue({
+    //     positions: posStr
+    //   })
+    // }
     }
   }
 

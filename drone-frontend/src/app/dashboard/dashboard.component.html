@@ -1,0 +1,78 @@
+<div class="dashboard-container">
+    <!-- Header -->
+    <header class="header">
+        <img src="assets/goaerologo.png" alt="Go Aero Logo" class="logo-img" />
+      <!-- <h1 class="logo">GO AERO</h1> -->
+    </header>
+  
+    <!-- Main Content -->
+    <div class="main-content">
+      
+      <!-- Left Panel: Mission Controls -->
+      <div class="left-panel">
+        <button class="btn arm-btn" (click)="onSubmitArmDrone(1)">Arm</button>
+        <button class="btn disarm-btn" (click)="onSubmitArmDrone(0)">Disarm</button>
+  
+        <form [formGroup]="missionFormALL" (ngSubmit)="onSubmitMissionALL()" class="mission-controls ui-panel">
+            <label>Mission Mode</label>
+            <div class="form-group">
+              <select [formControl]="selectedMissionControl">
+                <option value="waypoints">Waypoints</option>
+              </select>
+            </div>
+          
+            <label>Altitude</label>
+            <div class="form-group icon-input">
+              <input type="range" min="5" max="50" step="1" [formControl]="altitudeControl" />
+              <span class="input-icon material-icons">height</span>
+            </div>
+          
+            <label>Linear Velocity</label>
+            <div class="form-group icon-input">
+              <input type="number" placeholder="1.0" [formControl]="linearVelocityControl" />
+              <span class="input-icon material-icons">speed</span>
+            </div>
+          
+            <label>Angular Velocity</label>
+            <div class="form-group icon-input">
+              <input type="number" placeholder="1.0" [formControl]="angularVelocityControl" />
+              <span class="input-icon material-icons">rotate_right</span>
+            </div>
+
+            <label>Waypoints</label>
+            <div class="form-group icon-input">
+              <input type="number" placeholder="1.0" [formControl]="angularVelocityControl" />
+              <span class="input-icon material-icons">rotate_right</span>
+            </div>
+          
+            <button type="submit" class="btn wide-btn upload-btn">
+              Upload Waypoints
+            </button>
+          </form>
+          
+      </div>
+  
+      <!-- Right Panel: Visual Data -->
+
+    <div class="right-panel">
+    <!-- Google Map -->
+    <div class="map-section light-panel">
+      <div id="map" class="map"></div>
+    </div>
+  
+    <!-- SLAM + Camera as separate boxed panels -->
+    <div class="data-section">
+      <div class="panel-box">
+        <h4>SLAM Map</h4>
+        <img src="assets/sample_slam_map.png" alt="SLAM Output" />
+      </div>
+      <div class="panel-box">
+        <h4>Live Camera</h4>
+        <img src="http://localhost:5000/video_feed" alt="Camera Feed" />
+      </div>
+    </div>
+  </div>
+  
+    </div>
+  </div>
+  
