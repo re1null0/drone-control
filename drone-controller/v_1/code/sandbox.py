@@ -59,11 +59,11 @@ initial_state = {'x': np.array([1, 1, 1]),
 # the flat outputs calculated by you trajectory.
 
 print('Simulate.')
-(time, state, control, flat, exit) = simulate(initial_state, # Needs an input   
-                                              quadrotor,     # Always the same
-                                              my_se3_control,# Always the same
-                                              my_traj,       # Needs an input (Cedric got it)
-                                              t_final)       # Cedric got it
+(time, state, control, flat, exit) = simulate(initial_state,  # Needs an input   
+                                              quadrotor,      # Always the same
+                                              my_se3_control, # Always the same
+                                              my_traj,        # Needs an input (Cedric got it)
+                                              t_final)        # Cedric got it
 print(exit.value)
 
 # Plot Results
