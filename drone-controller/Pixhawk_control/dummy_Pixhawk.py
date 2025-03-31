@@ -34,10 +34,12 @@ def get_motor_outputs(t):
 # --- MAVLink connection setup ---
 # Adjust the connection string as appropriate.
 # Here we use UDP outbound from the companion (Jetson Nano) to Pixhawk.
-master = mavutil.mavlink_connection('udpout:0.0.0.0:9000')
+master = mavutil.mavlink_connection("/dev/ttyACM0", baud=115200)
 print("Waiting for heartbeat from Pixhawk...")
 master.wait_heartbeat()
 print("Heartbeat received. Connected to Pixhawk.")
+
+master.arducopter_arm()
 
 # Optionally, disable any internal control loops (if needed) and ensure offboard mode is enabled.
 
