@@ -2,7 +2,7 @@
 
 import rclpy
 from rclpy.node import Node
-from rclpy.qos import QoSProfile, ReliabilityPolicy, HistoryPolicy
+from rclpy.qos import QoSProfile, ReliabilityPolicy, HistoryPolicy, DurabilityPolicy
 from rclpy.duration import Duration
 from geometry_msgs.msg import PoseStamped, Twist, Vector3
 from mavros_msgs.msg import State, ParamValue
@@ -12,30 +12,23 @@ import argparse
 from nav_msgs.msg import OccupancyGrid
 import time
 import sys, os
-from drone_controller.flightsim.simulate import simulate, Quadrotor
+# from drone_controller.flightsim.simulate import simulate, Quadrotor
 
-from drone_controller.flightsim.drone_params import quad_params
+# from drone_controller.flightsim.drone_params import quad_params
 
 
 
 
 # Import from RRT-Planning-Script.py
-from RRT_Planning_Script import RRT, NodeRRT
+from rrt_planning import RRT, NodeRRT
 # Import from Trajectory-Smoothing.py
-from Trajectory_Smoothing import smooth_trajectory
+from trajectory_smoothing import smooth_trajectory
 # Import from Visualization-Collision-Script.py
-from Visualization_Collision_Script import VisualizationCollision
+from visualization_collision import VisualizationCollision
 
 class CustomController(Node):
     def __init__(self):
         super().__init__('custom_controller')
-        
-        # QoS profile for reliable communication
-        qos_profile = QoSProfile(
-            reliability=ReliabilityPolicy.RELIABLE,
-            history=HistoryPolicy.KEEP_LAST,
-            depth=10
-        )
         
         # Create rate
         self.rate = self.create_rate(20)  # 20 Hz
@@ -56,6 +49,7 @@ class CustomController(Node):
         """
         callback function for the 'State' topic subscriber
         """
+        self.get_logger().info_once("Got FCU state")
         self.current_state = state
 
     def local_position_pose_callback(self, data):
@@ -442,11 +436,11 @@ class CustomController(Node):
                     raise RuntimeError("Service not available")
                 self.get_logger().info("Waiting for set_mode service...")
                 
-            start_time = time.time()
-            while not self.set_param_srv.wait_for_service(timeout_sec=1.0):
-                if time.time() - start_time > service_timeout:
-                    raise RuntimeError("Service not available")
-                self.get_logger().info("Waiting for param service...")
+            # start_time = time.time()
+            # while not self.set_param_srv.wait_for_service(timeout_sec=1.0):
+            #     if time.time() - start_time > service_timeout:
+            #         raise RuntimeError("Service not available")
+            #     self.get_logger().info("Waiting for param service...")
                 
             self.get_logger().info("ROS services are up")
             self.get_logger().info("Successfully connected to the ROS services.")
@@ -467,15 +461,33 @@ class CustomController(Node):
                 PoseStamped, 'mavros/setpoint_position/local', 10)
             self.vel_pub = self.create_publisher(
                 Twist, 'mavros/setpoint_velocity/cmd_vel_unstamped', 10)
-                
-            # Create subscribers
+
+            # QoS for /mavros/state (default from MAVROS is RELIABLE + TRANSIENT_LOCAL)
+            state_qos = QoSProfile(
+                reliability=ReliabilityPolicy.RELIABLE,
+                durability=DurabilityPolicy.VOLATILE,
+                history=HistoryPolicy.KEEP_LAST,
+                depth=10
+            )
+
+            # QoS for /mavros/local_position/pose (RELIABLE + TRANSIENT_LOCAL)
+            pose_qos = QoSProfile(
+                reliability=ReliabilityPolicy.BEST_EFFORT,
+                durability=DurabilityPolicy.VOLATILE,
+                history=HistoryPolicy.KEEP_LAST,
+                depth=10
+            )
+
+            # Subscribers
             self.state_sub = self.create_subscription(
-                State, 'mavros/state', self.state_cb, 10)
+                State, 'mavros/state', self.state_cb, state_qos)
+
             self.local_pos_sub = self.create_subscription(
-                PoseStamped, 'mavros/local_position/pose', self.local_position_pose_callback, 10)
+                PoseStamped, 'mavros/local_position/pose', self.local_position_pose_callback, pose_qos)
+
             self.map_sub = self.create_subscription(
                 OccupancyGrid, '/map', self.map_cb, 10)
-                
+
             return True
             
         except Exception as e:
@@ -487,11 +499,19 @@ class CustomController(Node):
         Tries to establish a FCU connection
         """
         # wait for FCU connection
-        self.get_logger().info("Waiting for FCU connection")
+        self.get_logger().info("Waiting for FCU connection...")
+        timeout = 15  # seconds
+        start_time = time.time()
+
         while not self.current_state.connected:
+            if time.time() - start_time > timeout:
+                self.get_logger().error("Timed out waiting for FCU connection.")
+                return False
             await self.rate.sleep()
+
         self.get_logger().info("FCU connection established")
         return True
+
 
 def parsePositions():
     """

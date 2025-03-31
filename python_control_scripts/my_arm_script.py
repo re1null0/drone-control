@@ -50,7 +50,7 @@ class CustomController(Node):
         for client, name in [
             (self.arming_client, "arming"),
             (self.set_mode_client, "set_mode"),
-            (self.set_param_srv, "param_set")
+            # (self.set_param_srv, "param_set")
         ]:
             while not client.wait_for_service(timeout_sec=1.0):
                 self.get_logger().info(f"Waiting for {name} service...")
