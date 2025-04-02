@@ -7,8 +7,10 @@ from dronekit import connect, VehicleMode, LocationGlobal, LocationGlobalRelativ
 from pymavlink import mavutil
 import numpy as np
 
-vehicle = connect('/dev/ttyACM0', baud=115200, wait_ready=True)
-print("Connected to vehicle on: %s" % vehicle._connection_string)
+connection_string = '/dev/ttyACM0'
+
+vehicle = connect(connection_string, baud=115200, wait_ready=True)
+print("Connected to vehicle on: %s" % connection_string)
 print(str(vehicle.system_status.state))
 print("Vehicle mode: %s" % vehicle.mode.name)
 print("Vehicle armed: %s" % vehicle.armed)
@@ -23,7 +25,7 @@ print("Vehicle attitude: %s" % vehicle.attitude)
 print("Vehicle altitude: %s" % vehicle.location.global_relative_frame.alt)
 
 
-def arm():
+def arm_takeoff(takeoff=True, target_height=1):
     while vehicle.is_armable is False:
         print("Waiting for vehicle to initialize...")
         time.sleep(1)
@@ -39,6 +41,24 @@ def arm():
     while vehicle.armed is False:
         print("Waiting for vehicle to arm...")
         time.sleep(1)
-    print("Vehicle is armed, ready to fly! \n")
-    
-arm()
+    print(f"Vehicle is armed, ready to fly to {target_height}! \n")
+
+    vehicle.simple_takeoff(target_height)
+    while True:
+        current_altitude = vehicle.location.global_relative_frame.alt
+        print("Current Altitude: " + str(current_altitude))
+
+        if current_altitude >= 0.98 * target_height:
+            break
+        time.sleep(0.5)
+
+    return None
+
+arm_takeoff()
+
+vehicle.mode = VehicleMode("LAND")
+while vehicle.mode!='LAND':
+    time.sleep(1)
+    print("Waiting for drone to enter LAND mode")
+
+print("Drone is in LAND mode. Exiting")

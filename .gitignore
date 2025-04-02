@@ -85,6 +85,7 @@ wheels/
 /wandb/
 .installed.cfg
 *.egg
+py38env/
 
 
 # PyInstaller
