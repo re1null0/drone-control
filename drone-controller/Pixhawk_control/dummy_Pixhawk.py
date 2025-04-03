@@ -64,7 +64,7 @@ def disable_arm_checks(master):
     time.sleep(2)
 
 # --- MAVLink connection setup ---
-connection_string = '/dev/ttyACM0'
+connection_string = 'udp:127.0.0.1:14551'
 baud_rate = 115200
 master = mavutil.mavlink_connection(connection_string, baud=baud_rate)
 

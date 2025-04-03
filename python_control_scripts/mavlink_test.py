@@ -2,7 +2,7 @@ from pymavlink import mavutil
 import time
 
 # Connect to Pixhawk
-connection_string = '/dev/ttyACM0'
+connection_string = 'udp:127.0.0.1:14551'
 baud_rate = 115200
 master = mavutil.mavlink_connection(connection_string, baud=baud_rate)
 hover_time = 5      # seconds to hover
@@ -27,6 +27,34 @@ def arm():
     # Wait for arming confirmation
     master.motors_armed_wait()
     print(" Motors armed")
+
+def disable_gps():
+    print("disabling GPS requirements")
+    master.mav.param_set_send(
+        master.target_system, 
+        master.target_component, 
+        b'GPS_TYPE', float(0),
+        mavutil.mavlink.MAV_PARAM_TYPE_INT32
+    )
+    time.sleep(2)
+
+    master.mav.param_set_send(
+    master.target_system,
+    master.target_component,
+    b'EK2_GPS_TYPE',
+    float(0),
+    mavutil.mavlink.MAV_PARAM_TYPE_INT32
+    )
+
+    # Or if using EKF3:
+    master.mav.param_set_send(
+        master.target_system,
+        master.target_component,
+        b'EK3_GPS_TYPE',
+        float(0),
+        mavutil.mavlink.MAV_PARAM_TYPE_INT32
+    )
+
 
 # Function to take off
 def takeoff(altitude):
@@ -72,20 +100,13 @@ def send_velocity(vx, vy, vz, duration):
             int((time.time() - boot_time) * 1000),
             master.target_system,
             master.target_component,
-            mavutil.mavlink.MAV_FRAME_LOCAL_NED,  # or BODY_NED
+            mavutil.mavlink.MAV_FRAME_BODY_NED,  # or BODY_NED
             type_mask,
             0, 0, 0,
             vx, vy, vz,
             0, 0, 0,
             0, 0)
         time.sleep(0.1)
-
-def override_throttle(throttle_pwm):
-    print(f"Overriding throttle with PWM={throttle_pwm}")
-    master.mav.rc_channels_override_send(
-        master.target_system,
-        master.target_component,
-        0, 0, throttle_pwm, 0, 0, 0, 0, 0)  # Channel 3 is usually throttle
 
 
 def disable_arm_checks():
@@ -107,11 +128,43 @@ def listen_for_feedback(timeout=5):
         time.sleep(0.1)
 
 
+
+
 # MAIN SCRIPT
-set_mode('GUIDED_NOGPS')
 disable_arm_checks()
+disable_gps()
+# set_mode('GUIDED_NOGPS')
+
+# arm()
+# send_velocity(0, 0, -1.0, 5)  # Aggressive upward command
+# # msg = master.recv_matcj(type="COMMAND_ACK", blocking=True, timeout=5)
+# send_velocity(0, 0, 0, 10)     # Hover
+# land()
+
+# Arm
 arm()
-time.sleep(3)
-send_velocity(0, 0, -1.0, 3)  # Aggressive upward command
-send_velocity(0, 0, 0, 2)     # Hover
+
+# Switch to GUIDED_NOGPS and verify ACK
+set_mode("GUIDED_NOGPS")
+time.sleep(2)
+
+# Issue takeoff command 
+takeoff_alt = 2.0
+print(f"Taking off to {takeoff_alt}m")
+master.mav.command_long_send(
+    master.target_system, master.target_component,
+    mavutil.mavlink.MAV_CMD_NAV_TAKEOFF,
+    0,
+    0, 0, 0, 0, 0, 0, takeoff_alt
+)
+
+# Give it time to reach altitude
+time.sleep(10)
+
+# Now send velocity or position setpoints
+send_velocity(0, 0, 0, 5)   # Hover for 5s
+send_velocity(0, 1, 0, 3)   # Move in the Y direction for 3s
+send_velocity(0, 0, 0, 2)
+
+# Land
 land()
