@@ -132,7 +132,7 @@ def listen_for_feedback(timeout=5):
 
 # MAIN SCRIPT
 disable_arm_checks()
-disable_gps()
+# disable_gps()
 # set_mode('GUIDED_NOGPS')
 
 # arm()
