@@ -26,14 +26,14 @@ t_array = np.linspace(0, t_final, t_final)
 
 points = np.array([
     [0, 0, 0],
-    [1.5, 0, 0],
-    [1.5, 1.5, 0],
-    [1.5, 1.5, 1.5],
-    [-1.5, 1.5, 1.5],
-    [-1.5, 1.5, -1.5],
-    [-1.5, 1.5, -1.5],
-    [-1.5, 0, -1.5],
-    [0, 0, -1.5],
+    [1, 0, 0],
+    [1, 1, 0],
+    [1, 1, 1.5],
+    [-1, 1, 1.],
+    [-1, -1, .75],
+    [1, 1, 1.5],
+    [1, 0, 1],
+    [0, 0, .5],
     [0, 0, 0]
     ])
 my_traj = waypoint_traj.WaypointTraj(points)
@@ -144,8 +144,6 @@ ax.plot3D(flat['x'][:,0], flat['x'][:,1], flat['x'][:,2], 'k')
 # Instead of viewing the animation live, you may provide a .mp4 filename to save.
 R = Rotation.from_quat(state['q']).as_matrix()
 
-
 ani = animate(time, state['x'], R, world=world, filename=None)
-
 
 plt.show()
