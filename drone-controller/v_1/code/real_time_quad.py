@@ -141,8 +141,10 @@ if graphing:
     # Instead of viewing the animation live, you may provide a .mp4 filename to save.
     R = Rotation.from_quat(state['q']).as_matrix()
 
-    ani = animate(time, state['x'], R, world=world, filename=None)
+    ani = animate(time, state['x'], flat['x'], R, world=world, filename=None)
+    print(f"-----------------------------")
     print(f"Displaying Simulation Results")
+    print(f"-----------------------------\n")
     plt.show()
     
 # Connect to Pixhawk

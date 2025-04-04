@@ -38,7 +38,7 @@ def _decimate_index(time, sample_time):
     sample_index = np.round(np.interp(sample_time, time, index)).astype(int)
     return sample_index
 
-def animate(time, position, rotation, world, filename=None, blit=False, show_axes=True, close_on_finish=False):
+def animate(time, position, ideal_pos, rotation, world, filename=None, blit=False, show_axes=True, close_on_finish=False):
     """
     Animate a completed simulation result based on the time, position, and
     rotation history. The animation may be viewed live or saved to a .mp4 video
@@ -97,12 +97,18 @@ def animate(time, position, rotation, world, filename=None, blit=False, show_axe
 
     def init():
         ax.draw(fig.canvas.get_renderer())
+        
+        ax.plot3D(position[:,0], position[:,1], position[:,2], 'b.', ms=0.5)
+        ax.plot3D(ideal_pos[:,0], ideal_pos[:,1], ideal_pos[:,2], 'k', linewidth=0.75)
         return world_artists + list(quad.artists) + [title_artist]
 
     def update(frame):
         title_artist.set_text('t = {:.2f}'.format(time[frame]))
         quad.transform(position=position[frame,:], rotation=rotation[frame,:,:])
         [a.do_3d_projection(fig.canvas.get_renderer()) for a in quad.artists]
+        
+        ax.plot3D(position[:frame+1, 0], position[:frame+1, 1], position[:frame+1, 2], 'g.', ms=2)
+        
         return world_artists + list(quad.artists) + [title_artist]
 
     ani = ClosingFuncAnimation(fig=fig,
