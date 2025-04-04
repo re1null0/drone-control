@@ -1,9 +1,10 @@
 import numpy as np
 from scipy.spatial.transform import Rotation
+import matplotlib
+matplotlib.use('TkAgg') 
 import matplotlib.pyplot as plt
 from tqdm import tqdm
-import time 
-import math
+import time
 
 from pymavlink import mavutil
 
@@ -16,7 +17,7 @@ from flightsim import hover_traj
 
 import waypoint_traj
 import se3_control
-import pixhawk_realtime
+from pixhawk_realtime import *
 
 # This object defines the quadrotor dynamical model and should not be changed.
 quadrotor = Quadrotor(quad_params) # GIVEN
@@ -141,7 +142,7 @@ if graphing:
     R = Rotation.from_quat(state['q']).as_matrix()
 
     ani = animate(time, state['x'], R, world=world, filename=None)
-
+    print(f"Displaying Simulation Results")
     plt.show()
     
 # Connect to Pixhawk
