@@ -46,9 +46,9 @@ def simulate(initial_state, quadrotor, controller, trajectory, t_final, terminat
             q, quaternion [i,j,k,w], shape=(N,4)
             w, angular velocity, rad/s, shape=(N,3)
         control, a dict describing the command input history with keys
-            cmd_motor_speeds, motor speeds, rad/s, shape=(N,4)
-            cmd_q, commanded orientation (not used by simulator), quaternion [i,j,k,w], shape=(N,4)
-            cmd_w, commanded angular velocity (not used by simulator), rad/s, shape=(N,3)
+            cmd_motor_speeds, motor speeds,                                       rad/s,                shape=(N,4)
+            cmd_q,            commanded orientation (not used by simulator),      quaternion [i,j,k,w], shape=(N,4)
+            cmd_w,            commanded angular velocity (not used by simulator), rad/s,                shape=(N,3)
         flat, a dict describing the desired flat outputs from the trajectory with keys
             x,        position, m
             x_dot,    velocity, m/s

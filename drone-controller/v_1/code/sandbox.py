@@ -1,7 +1,3 @@
-"""
-This file is not used for grading at all, and you should modify it any way you find useful.
-"""
-
 import numpy as np
 from scipy.spatial.transform import Rotation
 import matplotlib.pyplot as plt
@@ -65,6 +61,7 @@ print('Simulate.')
                                               my_traj,        # Needs an input (Cedric got it)
                                               t_final)        # Cedric got it
 print(exit.value)
+print(f"Control: {control}")
 
 # Plot Results
 #
