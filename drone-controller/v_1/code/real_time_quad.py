@@ -65,7 +65,7 @@ print(exit.value)
 # print(f"Control: {control}")
 
 # Plot Results
-graphing = True
+graphing = False
 
 if graphing:
     # Position and Velocity vs. Time

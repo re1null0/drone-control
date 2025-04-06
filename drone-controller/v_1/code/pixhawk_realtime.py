@@ -9,7 +9,7 @@ from tqdm import tqdm
 ##############################################
 # 1) MAVLink Connection & Setup
 ##############################################
-def connect_and_setup(connection_string='udp:127.0.0.1:14551', baud=115200):
+def connect_and_setup(connection_string='udp:127.0.0.1:14550', baud=115200):
     print(f"Connecting to {connection_string}...")
     master = mavutil.mavlink_connection(connection_string, baud=baud)
     master.wait_heartbeat()

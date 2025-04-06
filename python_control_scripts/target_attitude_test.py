@@ -19,7 +19,7 @@ from pymavlink import mavutil
 
 # CHANGE THIS: If you're running SITL locally, use 'udp:127.0.0.1:14551'
 # If you're on real hardware over USB, something like '/dev/ttyACM0' (Linux) or 'COM3' (Windows).
-connection_string = 'udp:127.0.0.1:14551'
+connection_string = 'udp:127.0.0.1:14550'
 baud_rate = 115200
 
 boot_time = time.time()

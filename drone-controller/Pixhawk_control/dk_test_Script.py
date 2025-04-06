@@ -9,7 +9,8 @@ import numpy as np
 
 
 # Check if '/dev/ttyACM0' exists; if not, use '/dev/ttyACM1'
-connection_string = '/dev/ttyACM0'
+# connection_string = '/dev/ttyACM0'
+connection_string = "udp:127.0.0.1:14550" # use for SITL
 #if not os.path.exists(connection_string):
 #    connection_string = '/dev/ttyACM1'
 
