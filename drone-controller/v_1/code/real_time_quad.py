@@ -29,15 +29,15 @@ t_array = np.linspace(0, t_final, t_final)
 
 points = np.array([
     [0, 0, 0],
-    [1, 0, 0],
-    [1, 1, 0],
-    [1, 1, 1.5],
-    [-1, 1, 1.],
-    [-1, -1, .75],
-    [1, 1, 1.5],
-    [1, 0, 1],
-    [0, 0, .5],
-    [0, 0, 0]
+    [0, 0, 1],
+    # [0, 1, 1],
+    # [1, 1, 1.5],
+    # [-1, 1, 1.5],
+    # [-1, -1, 1.5],
+    # [1, 1, 1.5],
+    # [1, 0, 1.5],
+    # [0, 0, 1.5],
+    # [0, 0, 0]
     ])
 my_traj = waypoint_traj.WaypointTraj(points)
 
@@ -49,7 +49,7 @@ world = World.empty((-w, w, -w, w, -w, w))
     v: x,y,z velocity at t=0
     q: quaternion - for orientation information at t=0 -- cedric about to give a converter
     w: x,y,z angular velocity at t=0'''
-initial_state = {'x': np.array([1, 1, 1]),
+initial_state = {'x': np.array([0, 0, 0]),
                  'v': np.zeros(3,),
                  'q': np.array([0, 0, 0, 1]), # [i,j,k,w]
                  'w': np.zeros(3,)}
@@ -65,7 +65,7 @@ print(exit.value)
 # print(f"Control: {control}")
 
 # Plot Results
-graphing = False
+graphing = True
 
 if graphing:
     # Position and Velocity vs. Time
