@@ -10,7 +10,7 @@ Notes:
 """
 
 quad_params = {
-    'mass': 1.215,   # kg
+    'mass': 1.25,     # kg
     'Ixx':  0.00592, # kg*m^2
     'Iyy':  0.00592, # kg*m^2
     'Izz':  0.01184, # kg*m^2

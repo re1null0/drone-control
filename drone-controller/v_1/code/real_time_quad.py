@@ -1,7 +1,7 @@
 import numpy as np
 from scipy.spatial.transform import Rotation
 import matplotlib
-matplotlib.use('TkAgg') 
+#matplotlib.use('TkAgg') 
 import matplotlib.pyplot as plt
 from tqdm import tqdm
 import time

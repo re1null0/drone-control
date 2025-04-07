@@ -37,10 +37,10 @@ class SE3Control(object):
         self.g = 9.81 # m/s^2
         
         # PD gains
-        self.K_p = np.array([11, 11, 25]) * 0.2
-        self.K_d = np.array([12, 12, 8]) * 0.7
-        self.K_R = np.diag([1300, 1300, 55]) * 0.2
-        self.K_omega = np.diag([160, 160, 15]) * 0.7
+        self.K_p = np.array([2, 2, 5])
+        self.K_d = np.array([1, 1, 3])
+        self.K_R = np.diag([1000, 1000, 50])
+        self.K_omega = np.diag([112, 112, 10.5])
         self.M = np.linalg.inv(np.array([
             [1,                1,               1,               1               ],    
             [0,                self.arm_length, 0,               -self.arm_length],
