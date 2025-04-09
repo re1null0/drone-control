@@ -36,11 +36,17 @@ class SE3Control(object):
         self.inertia = np.diag(np.array([self.Ixx, self.Iyy, self.Izz])) # kg*m^2
         self.g = 9.81 # m/s^2
         
+        # Old
+        self.K_p = np.array([0.75, 0.75, 1.5])
+        self.K_d = np.array([1, 1, 2.5])
+        self.K_R = np.diag([500, 500, 40]) #weight around 1.68
+        self.K_omega = np.diag([120, 120, 10])
+
         # PD gains
-        self.K_p = np.array([2, 2, 5])
-        self.K_d = np.array([1, 1, 3])
-        self.K_R = np.diag([1000, 1000, 50])
-        self.K_omega = np.diag([112, 112, 10.5])
+        # self.K_p = np.array([35, 35, 110])
+        # self.K_d = np.array([6, 6, 12])
+        # self.K_R = np.diag([1000, 1000, 55])
+        # self.K_omega = np.diag([160, 160, 7])
         self.M = np.linalg.inv(np.array([
             [1,                1,               1,               1               ],    
             [0,                self.arm_length, 0,               -self.arm_length],

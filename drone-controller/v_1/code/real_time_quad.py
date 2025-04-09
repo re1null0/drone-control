@@ -17,7 +17,7 @@ from flightsim import hover_traj
 
 import waypoint_traj
 import se3_control
-from pixhawk_realtime import *
+from pixhawk_realtime import Pixhawk_Control
 
 # This object defines the quadrotor dynamical model and should not be changed.
 quadrotor = Quadrotor(quad_params) # GIVEN
@@ -30,6 +30,11 @@ t_array = np.linspace(0, t_final, t_final)
 points = np.array([
     [0, 0, 0],
     [0, 0, 1],
+    [0, 0, 1],
+    [0, 0.5, 1],
+    [0.5, 0.5, 1],
+    [0.5, -0.5, 1],
+    [-0.25, -0.5, 1.5]
     # [0, 1, 1],
     # [1, 1, 1.5],
     # [-1, 1, 1.5],
@@ -65,7 +70,7 @@ print(exit.value)
 # print(f"Control: {control}")
 
 # Plot Results
-graphing = True
+graphing = False
 
 if graphing:
     # Position and Velocity vs. Time
@@ -88,6 +93,7 @@ if graphing:
     ax.set_ylabel('velocity, m/s')
     ax.set_xlabel('time, s')
     ax.grid('major')
+    plt.savefig("real_time_quad_pos_vel.png")
 
     # Orientation and Angular Velocity vs. Time
     (fig, axes) = plt.subplots(nrows=2, ncols=1, sharex=True, num='Orientation vs Time')
@@ -107,6 +113,7 @@ if graphing:
     ax.set_ylabel('angular velocity, rad/s')
     ax.set_xlabel('time, s')
     ax.grid('major')
+    plt.savefig("real_time_quad_pos_vel.png")
 
     # Commands vs. Time
     (fig, axes) = plt.subplots(nrows=3, ncols=1, sharex=True, num='Commands vs Time')
@@ -129,6 +136,7 @@ if graphing:
     ax.set_ylabel('thrust, N')
     ax.set_xlabel('time, s')
     ax.grid('major')
+    plt.savefig("real_time_quad_pos_vel.png")
 
     # 3D Paths
     fig = plt.figure('3D Path')
@@ -136,6 +144,7 @@ if graphing:
     world.draw(ax)
     ax.plot3D(state['x'][:,0], state['x'][:,1], state['x'][:,2], 'b.')
     ax.plot3D(flat['x'][:,0], flat['x'][:,1], flat['x'][:,2], 'k')
+    plt.savefig("real_time_quad_pos_vel.png")
 
     # Animation (Slow)
     # Instead of viewing the animation live, you may provide a .mp4 filename to save.
@@ -145,10 +154,11 @@ if graphing:
     print(f"-----------------------------")
     print(f"Displaying Simulation Results")
     print(f"-----------------------------\n")
-    plt.show()
-    
+    input("Review_animation to continue...\n")
+
+Pixhawk = Pixhawk_Control(quad_params)
 # Connect to Pixhawk
-master = connect_and_setup()
+master = Pixhawk.connect_and_setup()
 
 # Then the loop for replay_in_real_time:
-replay_in_real_time(master, time, state, control)
+Pixhawk.replay_in_real_time(master, time, state, control, flat)
