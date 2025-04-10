@@ -31,7 +31,7 @@ export class DashboardComponent implements OnInit {
 
   ngOnInit(): void {
     const loader = new Loader({
-      apiKey: '', // INSERT YOUR GOOGLE MAPS API KEY
+      apiKey: 
       version: 'weekly',
     });
 
