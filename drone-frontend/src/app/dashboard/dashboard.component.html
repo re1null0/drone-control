@@ -1,3 +1,4 @@
+
 <div class="dashboard-container">
     <!-- Header -->
     <header class="header">
@@ -24,7 +25,6 @@
             <label>Altitude</label>
             <div class="form-group icon-input">
               <input type="range" min="5" max="50" step="1" [formControl]="altitudeControl" />
-              <span class="input-icon material-icons">height</span>
             </div>
           
             <label>Linear Velocity</label>
@@ -64,11 +64,16 @@
     <div class="data-section">
       <div class="panel-box">
         <h4>SLAM Map</h4>
-        <img src="assets/sample_slam_map.png" alt="SLAM Output" />
+        <img src="assets/slam_image.jpeg" alt="SLAM Output" />
       </div>
       <div class="panel-box">
         <h4>Live Camera</h4>
-        <img src="http://localhost:5000/video_feed" alt="Camera Feed" />
+        <app-camera></app-camera>
+      </div>
+      <div class="panel-box">
+        <h4>Fire Spread Prediction</h4>
+        <app-fire-sim></app-fire-sim>
+
       </div>
     </div>
   </div>

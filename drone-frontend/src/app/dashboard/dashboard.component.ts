@@ -11,7 +11,7 @@ import { Loader } from '@googlemaps/js-api-loader';
 export class DashboardComponent implements OnInit {
   constructor(private http: HttpClient) {}
 
-  // Mission form (flat input fields now)
+  // Mission form 
   missionFormALL = new FormGroup({
     positions: new FormControl(''),
     altitude: new FormControl(''),

@@ -1,0 +1,77 @@
+.fire-sim-form {
+    font-family: 'Poppins', sans-serif;
+    display: flex;
+    align-items: flex-start;
+    flex-direction: row;
+    gap: 40px;
+    padding: 50px;
+  }
+
+  .controls {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    min-width: 200px;
+  }
+  .image-container img {
+    width: 500px;
+    height: auto;
+    border: 1px solid #ccc;
+  }
+  
+  .fire-sim-form label {
+    font-weight: 600;
+    margin-top: 8px;
+  }
+
+  
+  .fire-sim-form input[type="text"],
+  .fire-sim-form select,
+  .fire-sim-form input[type="number"] {
+    padding: 8px;
+    border-radius: 6px;
+    border: 1px solid #d1d5db;
+  }
+  
+  .fire-sim-form input[type="range"] {
+    width: 100%;
+  }
+  
+  .button-group {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+  }
+  
+  .btn.run-btn {
+    background-color: #2563eb;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 8px 12px;
+    cursor: pointer;
+    font-weight: 600;
+  }
+  
+  .btn.step-btn {
+    background-color: #6b7280;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 8px 12px;
+    cursor: pointer;
+    font-weight: 600;
+  }
+  
+  /* .image-preview img {
+    margin-top: 12px;
+    width: 300px;
+    border-radius: 6px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  } */
+  
+  .text-muted {
+    font-size: 0.85rem;
+    color: #6b7280;
+  }
+  
