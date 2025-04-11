@@ -3,6 +3,7 @@ import { FormGroup, FormControl } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { Loader } from '@googlemaps/js-api-loader';
 
+import { environment } from 'src/environments/environment';
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
@@ -31,7 +32,7 @@ export class DashboardComponent implements OnInit {
 
   ngOnInit(): void {
     const loader = new Loader({
-      apiKey:'', 
+      apiKey: environment.googleMapsApiKey, 
       version: 'weekly',
     });
 
