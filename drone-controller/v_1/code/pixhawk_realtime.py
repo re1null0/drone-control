@@ -123,7 +123,42 @@ class Pixhawk_Control(object):
         )
 
     ##############################################
-    # 4) Main "Replay/Real-Time" Loop
+    # 4) Send a one-time command (real-time control) 
+    ##############################################
+    def send_rt_command(self, master, cmd_q, cmd_thrust, time, state, flat):
+        """
+        Convert a desired quaternion & thrust [N] to
+        roll/pitch/yaw in radians and a normalized thrust 0..1,
+        then send to Pixhawk.
+        cmd_q: [i, j, k, w] quaternion
+        cmd_thrust: scalar in Newtons
+        """
+        # Convert to roll, pitch, yaw
+        roll, pitch, yaw = self.quaternion_to_euler([cmd_q[0], cmd_q[1], cmd_q[2], cmd_q[3]])
+        # scale thrust from N to 0..1
+        thrust_01 = np.clip(cmd_thrust / self.max_thrust, 0, 1)
+        # Now send
+        self.send_attitude_target(master, roll, pitch, yaw, thrust_01)
+
+        # Ensure time is a scalar float
+        t_val = float(np.squeeze(time))
+
+
+        np.set_printoptions(precision=3, suppress=True)
+        info_line = (
+            # f"t={t_val:5.2f}   "
+            f"pos=({state['x']})   "
+            f"flat-({flat['x']})   "
+            f"thrust={cmd_thrust:5.2f}N => {thrust_01:4.2f}   "
+            f"orientation=(r={roll:4.2f}, p={pitch:4.2f}, y={yaw:4.2f})"
+        )
+        print(info_line)
+
+    
+    
+    
+    ##############################################
+    # OBSOLETE - Main "Replay/Real-Time" Loop -- #
     ##############################################
     def replay_in_real_time(self, master,
                             time_array,
@@ -235,7 +270,7 @@ class Pixhawk_Control(object):
         # print("\nDone streaming commands!\n")
 
     ##############################################
-    # 5) Putting it all together
+    # OBSOLETE ---- Putting it all together ---- #
     ##############################################
     def main(self):
         # 1) Connect and setup

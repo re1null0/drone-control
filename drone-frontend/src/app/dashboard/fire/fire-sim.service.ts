@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 
 @Injectable({ providedIn: 'root' })
 export class FireSimService {
-  baseUrl = 'http://localhost:8000'; // Update to backend URL if deployed
+  baseUrl = 'http://100.109.13.93:8000'; // Update to backend URL if deployed
 
   constructor(private http: HttpClient) {}
 

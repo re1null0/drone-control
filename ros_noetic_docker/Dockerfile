@@ -20,9 +20,10 @@ RUN add-apt-repository universe && apt-get update
 RUN sh -c 'echo "deb http://packages.ros.org/ros/ubuntu focal main" > /etc/apt/sources.list.d/ros1-latest.list' && \
     curl -s https://raw.githubusercontent.com/ros/rosdistro/master/ros.asc | apt-key add -
 
-# Update and install ROS Noetic (ros-base) and Eigen3 dependencies
+# Update and install ROS Noetic (ros-base), add rospy and Eigen3 dependencies
 RUN apt-get update && apt-get install -y \
     ros-noetic-ros-base \
+    ros-noetic-rospy \
     libeigen3-dev && \
     rm -rf /var/lib/apt/lists/*
 
@@ -47,14 +48,17 @@ RUN apt-get update && apt-get install -y \
 # Initialize and update rosdep
 RUN rosdep init && rosdep update
 
-# Install additional Python packages via pip
-RUN pip3 install tqdm pymavlink pyserial
+# Install additional Python packages via pip: scipy, pymavlink, tqdm, pyserial
+RUN pip3 install scipy tqdm pymavlink pyserial
 
 # Automatically source the ROS setup file for new bash sessions
 RUN echo "source /opt/ros/noetic/setup.bash" >> /root/.bashrc
 
 # (Optional) Set environment variable for eigen_conversions if needed
 ENV eigen_conversions_DIR=/opt/ros/noetic/share/eigen_conversions/cmake
+
+# Export PYTHONPATH
+ENV PYTHONPATH="/workspace/drone-controller/"
 
 # Default command: start bash
 CMD ["/bin/bash"]

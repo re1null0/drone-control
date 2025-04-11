@@ -37,10 +37,19 @@ class SE3Control(object):
         self.g = 9.81 # m/s^2
         
         # Old
-        self.K_p = np.array([0.75, 0.75, 1.5])
-        self.K_d = np.array([1, 1, 2.5])
-        self.K_R = np.diag([500, 500, 40]) #weight around 1.68
-        self.K_omega = np.diag([120, 120, 10])
+        self.K_p = np.array([5.5, 5.5, 5.5])
+        self.K_d = np.array([6, 6, 6.75])
+        self.K_i = np.array([0.000, 0.000, 0.000])  # integral gain (example)
+
+        self.K_R = np.diag([800, 800, 50]) #weight around 1.68
+        self.K_omega = np.diag([150, 150, 15])
+        self.K_R_i = np.array([0.1, 0.1, 0.1])  # integral gain (example)
+
+        # Integral accumulator for position error
+        self.int_e = np.zeros(3)
+
+        # We’ll track last time to compute dt
+        self.t_last = None
 
         # PD gains
         # self.K_p = np.array([35, 35, 110])
@@ -88,9 +97,26 @@ class SE3Control(object):
         # cmd_thrust = 0
         # cmd_moment = np.zeros((3,))
         # cmd_q = np.zeros((4,))
-        
+        # 1) Compute dt for integral
+        if self.t_last is None:
+            dt = 0.0
+        else:
+            dt = t - self.t_last
+        self.t_last = t
+
+        # 2) Position and velocity errors
+        pos_error = state['x'] - flat_output['x']
+        vel_error = state['v'] - flat_output['x_dot']
+
+        # 3) Integral of position error
+        self.int_e += pos_error * dt * 0 # simple Euler integration
+        # Optional: clamp/saturate self.int_e to avoid integral windup
+
         # 1. Calculate F_des
-        r_dd_des = flat_output['x_ddot'] - self.K_d * (state['v'] - flat_output['x_dot']) - self.K_p * (state['x'] - flat_output['x'])
+        r_dd_des = (flat_output['x_ddot']
+                - self.K_p * pos_error
+                - self.K_d * vel_error
+                - self.K_i * self.int_e)
         F_des = self.mass * r_dd_des + np.array([0, 0, self.mass * self.g])
         
         # 2. Compute u_1 or cmd_thrust

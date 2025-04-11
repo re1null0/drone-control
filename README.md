@@ -91,18 +91,19 @@ rosrun hawk_tracking odom_relay.py
 ```
 
 ## Jetson:
+In 2 different terminals:
 ```
 ssh riya@100.77.20.58
 sudo docker run -it --network=host --rm --runtime nvidia -e DISPLAY=$DISPLAY -v /tmp/.X11-unix:/tmp/.X11-unix:rw -v /home/riya/drone-control:/workspace --device=/dev/ttyACM0:/dev/ttyACM0 ros_noetic_focal
 ``` 
 
-In the Environment (1):
+In Environment (1):
 ```
 . /workspace/vicon_setup/devel/setup.bash
 roscore & rosrun mocap_vicon odom_receiver.py
 ```
 
-In the Environment (2):
+In Environment (2):
 ```
 . /workspace/vicon_setup/devel/setup.bash
 [run scrips for control]

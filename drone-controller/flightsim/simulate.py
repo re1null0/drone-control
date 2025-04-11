@@ -5,7 +5,7 @@ import numpy as np
 from numpy.linalg import inv, norm
 import scipy.integrate
 from scipy.spatial.transform import Rotation
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 
 class ExitStatus(Enum):
     """ Exit status values indicate the reason for simulation termination. """

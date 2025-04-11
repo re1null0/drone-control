@@ -5,7 +5,7 @@ class WaypointTraj(object):
     """
 
     """
-    def __init__(self, points, speed=.9):
+    def __init__(self, points, speed=0.75):
         """
         This is the constructor for the Trajectory object. A fresh trajectory
         object will be constructed before each mission. For a waypoint
@@ -39,7 +39,7 @@ class WaypointTraj(object):
         
         self.l_hat = np.diff(self.points, axis=0)
         self.segment_lengths = np.linalg.norm(self.l_hat, axis=1, keepdims=True)
-        self.l_hat = self.l_hat / self.segment_lengths
+        self.l_hat = self.l_hat / (self.segment_lengths + 1e-8)
         
         self.segment_times = self.segment_lengths.flatten() / self.speed
         self.t_start = np.hstack(([0], np.cumsum(self.segment_times)))
