@@ -31,7 +31,7 @@ export class DashboardComponent implements OnInit {
 
   ngOnInit(): void {
     const loader = new Loader({
-      apiKey: 
+      apiKey:'', 
       version: 'weekly',
     });
 
