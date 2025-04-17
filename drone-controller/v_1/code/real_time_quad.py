@@ -54,18 +54,13 @@ def real_time_control_loop():
         
         # 1) Get the current drone state from the Vicon
         current_state = odom_sub.get_state()
-        current_state['x'] = current_state['x'] + xyz_offset
-        
-        # This 'current_state' is a dict: {x, v, q, w} 
-        # shape of x,v,w is (3,). q is [i,j,k,w].
-        
-        # 2) Build a desired 'flat_output' – the minimal references the SE3 controller expects.
-        
+        current_state['x'] += xyz_offset
+                
+        # 2) Build a desired 'flat_output'
         flat_output = my_traj.update(now)
         
-        # 3) Compute control
+        # 3) Compute control: cmd_motor_speeds, cmd_thrust, cmd_moment, cmd_q
         control_input = controller.update(now, current_state, flat_output)
-        # This should yield: cmd_motor_speeds, cmd_thrust, cmd_moment, cmd_q
 
         # 4) Send that command to the Pixhawk
         cmd_thrust = control_input['cmd_thrust']  # in Newtons

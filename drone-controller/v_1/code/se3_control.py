@@ -39,12 +39,12 @@ class SE3Control(object):
         # Old
         # self.K_p = np.array([5.5, 5.5, 5.5])
         # self.K_d = np.array([6, 6, 6.75])
-        self.K_p = np.array([3, 3, 6.5])
+        self.K_p = np.array([2, 2, 6])
         self.K_d = np.array([2, 2, 5]) 
         self.K_i = np.array([0.2, 0.2, 0.05]) * 0
 
-        self.K_R = np.diag([1000, 1000, 70]) # weight around 1.68
-        self.K_omega = np.diag([130, 130, 11])
+        self.K_R = np.diag([2000, 2000, 100]) # weight around 1.68
+        self.K_omega = np.diag([250, 250, 20])
         self.K_R_i = np.array([0.0, 0.0, 0.0])  
 
         # Integral accumulator for position error

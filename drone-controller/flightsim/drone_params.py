@@ -11,13 +11,13 @@ Notes:
 
 quad_params = {
     'mass': 1.78,#1.2,#75,#1.09,     # kg
-    'Ixx':  0.00592, # kg*m^2
-    'Iyy':  0.00592, # kg*m^2
-    'Izz':  0.01184, # kg*m^2
+    'Ixx':  0.005213, # kg*m^2
+    'Iyy':  0.005962, # kg*m^2
+    'Izz':  0.017282, # kg*m^2
     'arm_length': 0.225, # meters
     'rotor_speed_min': 0,    # rad/s
     'rotor_speed_max': 1000, # rad/s or 10,000 rpm
     'k_thrust': 4.45e-6, # N/(rad/s)**2
-    'k_drag':   4.45e-7, # Nm/(rad/s)**2
-    'max_thrust': 3.240 * 9.81 # 3240g
+    'k_drag':   2.225e-7, # Nm/(rad/s)**2
+    'max_thrust': 31.78 # N or 3.240 [kg] * 9.81 [m/s^2]
 }

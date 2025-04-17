@@ -139,7 +139,8 @@ class Pixhawk_Control(object):
         thrust_01 = np.clip(cmd_thrust / self.max_thrust, 0, 1)
         # Now send
         # self.send_attitude_target(master, roll, pitch, yaw, thrust_01)
-        self.send_attitude_target(master, cmd_q, thrust_01)
+        q_wxyz = [cmd_q[3], cmd_q[0], cmd_q[1], cmd_q[2]]
+        self.send_attitude_target(master, q_wxyz, thrust_01)
         # Ensure time is a scalar float
         t_val = float(np.squeeze(time))
 
@@ -148,10 +149,10 @@ class Pixhawk_Control(object):
         info_line = (
             # f"t={t_val:5.2f}   "
             f"pos=({state['x']})   "
-            f"orientation({state['q']})"
+            f"orientation({state['q']})" # i, j, k, w
             f"flat-({flat['x']})   "
             f"thrust={cmd_thrust:5.2f}N => {thrust_01:4.2f}   "
-            f"oriento=({cmd_q})"
+            f"oriento=({cmd_q})" # i, j, k, w
         )
         print(info_line)
 
