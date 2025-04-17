@@ -106,5 +106,6 @@ roscore & rosrun mocap_vicon odom_receiver.py
 In Environment (2):
 ```
 . /workspace/vicon_setup/devel/setup.bash
-[run scrips for control]
+cd /workspace/drone-controller/v_1/code/
+python3 real_time_quad.py 
 ```

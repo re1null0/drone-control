@@ -11,8 +11,8 @@
       
       <!-- Left Panel: Mission Controls -->
       <div class="left-panel">
-        <button class="btn arm-btn" (click)="onSubmitArmDrone(1)">Arm</button>
-        <button class="btn disarm-btn" (click)="onSubmitArmDrone(0)">Disarm</button>
+        <button class="btn arm-btn" (click)="onSubmitArmDrone(0)">Arm</button>
+        <button class="btn disarm-btn" (click)="onSubmitArmDrone(1)">Disarm</button>
   
         <form [formGroup]="missionFormALL" (ngSubmit)="onSubmitMissionALL()" class="mission-controls ui-panel">
             <label>Mission Mode</label>

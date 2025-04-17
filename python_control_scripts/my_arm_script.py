@@ -1,111 +1,92 @@
 #!/usr/bin/env python3
 
-import rclpy
-from rclpy.node import Node
-from geometry_msgs.msg import PoseStamped, Twist
-from mavros_msgs.msg import State
-from mavros_msgs.srv import CommandBool, SetMode, ParamSet
+import time
 import argparse
+from pymavlink import mavutil
 
+# ------------------------------------------------------------
+# Configuration
+# ------------------------------------------------------------
+connection_string = '/dev/ttyACM0'
+baud_rate = 115200
 
-class CustomController(Node):
-    def __init__(self):
-        super().__init__('offb_node')
+# ------------------------------------------------------------
+# Argument Parser
+# ------------------------------------------------------------
+parser = argparse.ArgumentParser(description='Arm or disarm the drone.')
+parser.add_argument('--arm_status', type=int, required=True, choices=[0, 1],
+                    help='Set to 0 to arm, 1 to disarm')
+args = parser.parse_args()
 
-        self.freq = 20.0  # in Hz
-        self.current_state = State()
-        self.local_position = PoseStamped()
-        self.initial_pos_acquired = False
-        self.initial_position = PoseStamped()
-        self.arrive_offset = 1.0  # in meters
+# ------------------------------------------------------------
+# Connect
+# ------------------------------------------------------------
+print(f"Connecting to {connection_string}...")
+master = mavutil.mavlink_connection(connection_string, baud=baud_rate)
+master.wait_heartbeat()
+print(f"Heartbeat received (system {master.target_system}, component {master.target_component})")
 
-        # Set up publishers and subscribers
-        self.publisher = self.create_publisher(Twist, '/mavros/setpoint_velocity/cmd_vel_unstamped', 10)
-        self.local_pos_pub = self.create_publisher(PoseStamped, '/mavros/setpoint_position/local', 10)
+# ------------------------------------------------------------
+# Functions
+# ------------------------------------------------------------
+def disable_arm_checks():
+    print("Disabling arming checks...")
+    master.mav.param_set_send(
+        master.target_system, master.target_component,
+        b'ARMING_CHECK',
+        float(0),
+        mavutil.mavlink.MAV_PARAM_TYPE_INT32
+    )
+    time.sleep(2)
 
-        self.state_sub = self.create_subscription(State, '/mavros/state', self.state_cb, 10)
-        self.local_pos_sub = self.create_subscription(PoseStamped, '/mavros/local_position/pose', self.local_position_pose_callback, 10)
+def set_guided_options():
+    print("Setting GUID_OPTIONS = 7...")
+    master.mav.param_set_send(
+        master.target_system, master.target_component,
+        b'GUID_OPTIONS',
+        float(7),
+        mavutil.mavlink.MAV_PARAM_TYPE_INT32
+    )
+    time.sleep(2)
 
-        self.timer = self.create_timer(1.0 / self.freq, self.timer_callback)
+def set_mode(mode_name: str):
+    print(f"Setting flight mode to {mode_name}...")
+    mode_id = master.mode_mapping()[mode_name]
+    master.mav.set_mode_send(
+        master.target_system,
+        mavutil.mavlink.MAV_MODE_FLAG_CUSTOM_MODE_ENABLED,
+        mode_id
+    )
+    time.sleep(2)
 
-        # Initialize service clients
-        self.arming_client = self.create_client(CommandBool, '/mavros/cmd/arming')
-        self.set_mode_client = self.create_client(SetMode, '/mavros/set_mode')
-        self.set_param_srv = self.create_client(ParamSet, '/mavros/param/set')
+def arm():
+    print("Arming motors...")
+    master.mav.command_long_send(
+        master.target_system, master.target_component,
+        mavutil.mavlink.MAV_CMD_COMPONENT_ARM_DISARM,
+        0, 1, 0, 0, 0, 0, 0, 0
+    )
+    master.motors_armed_wait()
+    print("Motors are armed.")
 
-    def timer_callback(self):
-        pass  # Placeholder for periodic tasks if needed
+def disarm():
+    print("Disarming motors...")
+    master.mav.command_long_send(
+        master.target_system, master.target_component,
+        mavutil.mavlink.MAV_CMD_COMPONENT_ARM_DISARM,
+        0, 0, 0, 0, 0, 0, 0, 0
+    )
+    master.motors_disarmed_wait()
+    print("Motors are disarmed.")
 
-    def state_cb(self, state):
-        self.current_state = state
+# ------------------------------------------------------------
+# Main Logic
+# ------------------------------------------------------------
+disable_arm_checks()
+set_guided_options()
+set_mode("GUIDED_NOGPS")
 
-    def local_position_pose_callback(self, data):
-        self.local_position = data
-        if not self.initial_pos_acquired:
-            self.initial_position = data
-            self.initial_pos_acquired = True
-
-    def wait_for_services(self):
-        self.get_logger().info("Waiting for ROS2 services...")
-        for client, name in [
-            (self.arming_client, "arming"),
-            (self.set_mode_client, "set_mode"),
-            # (self.set_param_srv, "param_set")
-        ]:
-            while not client.wait_for_service(timeout_sec=1.0):
-                self.get_logger().info(f"Waiting for {name} service...")
-
-        self.get_logger().info("All services available.")
-
-    def armDrone(self, arm_status):
-        arm_status = bool(arm_status)
-        self.get_logger().info(f"Setting arming status to: {arm_status}")
-        if self.current_state.armed != arm_status:
-            request = CommandBool.Request()
-            request.value = arm_status
-            future = self.arming_client.call_async(request)
-            rclpy.spin_until_future_complete(self, future)
-            if future.result() is not None:
-                if future.result().success:
-                    self.get_logger().info("Drone armed successfully")
-                else:
-                    self.get_logger().error("Failed to arm drone")
-            else:
-                self.get_logger().error("Service call to arm failed")
-
-    def checkForFCU(self):
-        self.get_logger().info("Waiting for FCU connection...")
-        while not self.current_state.connected:
-            rclpy.spin_once(self)
-        self.get_logger().info("FCU connection established.")
-
-    def position_control(self, arm_status):
-        self.armDrone(arm_status)
-
-
-def parsePositions():
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--arm_status", type=int, required=True)
-    args = parser.parse_args()
-    return args.arm_status
-
-
-def main(args=None):
-    rclpy.init(args=args)
-    arm_status = parsePositions()
-
-    try:
-        controller = CustomController()
-        controller.wait_for_services()
-        controller.checkForFCU()
-        controller.position_control(arm_status)
-        rclpy.spin(controller)
-    except KeyboardInterrupt:
-        controller.get_logger().info("Shutting down node...")
-    finally:
-        controller.destroy_node()
-        rclpy.shutdown()
-
-
-if __name__ == '__main__':
-    main()
+if args.arm_status == 0:
+    arm()
+else:
+    disarm()

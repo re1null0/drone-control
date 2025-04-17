@@ -83,7 +83,7 @@ def simulate(initial_state, quadrotor, controller, trajectory, t_final, terminat
     imu_measurements = []
     vio_state = [copy.deepcopy(initial_state)]
     flat    = [sanitize_trajectory_dic(trajectory.update(time[-1]))]
-    control = [sanitize_control_dic(controller.update(time[-1], state[-1], flat[-1]))]
+    control = [f(controller.update(time[-1], state[-1], flat[-1]))]
 
     exit_status = None
 

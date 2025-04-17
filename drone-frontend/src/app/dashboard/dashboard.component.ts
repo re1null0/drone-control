@@ -32,7 +32,7 @@ export class DashboardComponent implements OnInit {
 
   ngOnInit(): void {
     const loader = new Loader({
-      apiKey: environment.googleMapsApiKey, 
+      apiKey: 'AIzaSyCXloDpTVo3kBGYCBK_BB0e7nhUhCml770', 
       version: 'weekly',
     });
 
@@ -72,6 +72,7 @@ export class DashboardComponent implements OnInit {
   
 
   onSubmitArmDrone(arm_status: number) {
+    console.log("Arm clicked!", arm_status);
     const body = { arm_status };
     const url = "http://localhost:8080/armDrone";
     this.http.post(url, body).toPromise().then((res: any) => console.log(res));

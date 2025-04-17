@@ -17,9 +17,6 @@ public class ArmDroneService {
         Path projectRoot = FileSystems.getDefault().getPath("").toAbsolutePath().getParent(); // go up one level
         Path scriptPath = projectRoot.resolve("python_control_scripts/my_arm_script.py");
         String cmdStr = "python3 " + scriptPath + " --arm_status " + armStatus;
-
-
-
         // Call the script from the command line
 
         return commandLineService.runOnCommandLine(cmdStr);

@@ -5,7 +5,7 @@ class WaypointTraj(object):
     """
 
     """
-    def __init__(self, points, speed=0.75):
+    def __init__(self, points, speed=0.1):
         """
         This is the constructor for the Trajectory object. A fresh trajectory
         object will be constructed before each mission. For a waypoint

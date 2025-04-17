@@ -37,13 +37,15 @@ class SE3Control(object):
         self.g = 9.81 # m/s^2
         
         # Old
-        self.K_p = np.array([5.5, 5.5, 5.5])
-        self.K_d = np.array([6, 6, 6.75])
-        self.K_i = np.array([0.000, 0.000, 0.000])  # integral gain (example)
+        # self.K_p = np.array([5.5, 5.5, 5.5])
+        # self.K_d = np.array([6, 6, 6.75])
+        self.K_p = np.array([3, 3, 6.5])
+        self.K_d = np.array([2, 2, 5]) 
+        self.K_i = np.array([0.2, 0.2, 0.05]) * 0
 
-        self.K_R = np.diag([800, 800, 50]) #weight around 1.68
-        self.K_omega = np.diag([150, 150, 15])
-        self.K_R_i = np.array([0.1, 0.1, 0.1])  # integral gain (example)
+        self.K_R = np.diag([1000, 1000, 70]) # weight around 1.68
+        self.K_omega = np.diag([130, 130, 11])
+        self.K_R_i = np.array([0.0, 0.0, 0.0])  
 
         # Integral accumulator for position error
         self.int_e = np.zeros(3)
@@ -109,7 +111,9 @@ class SE3Control(object):
         vel_error = state['v'] - flat_output['x_dot']
 
         # 3) Integral of position error
-        self.int_e += pos_error * dt * 0 # simple Euler integration
+        self.int_e += pos_error * dt # * 0 # simple Euler integration
+
+        # print(f"error: {self.int_e}")
         # Optional: clamp/saturate self.int_e to avoid integral windup
 
         # 1. Calculate F_des
