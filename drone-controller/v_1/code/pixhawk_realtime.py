@@ -107,7 +107,7 @@ class Pixhawk_Control(object):
         # 6: attitude
         # 7: thrust
         # We'll ignore body rates, so set bits 0,1,2
-        type_mask = (1 << 0) | (1 << 1) | (1 << 2)
+        type_mask = (1 << 0) | (1 << 1) | (1 << 2) # 0b0000 0111
 
         # Time in milliseconds
         now_ms = int(time.time() * 1000) & 0xFFFFFFFF
@@ -122,6 +122,12 @@ class Pixhawk_Control(object):
             thrust
         )
 
+    # ENU to NED quaternion helper for correct orientation
+    def enu_to_ned_quat(self, q_i_j_k_w):
+        """Convert SciPy/ROS ENU [i,j,k,w]  →  ArduPilot NED [i,j,k,w]."""
+        qi, qj, qk, qw = q_i_j_k_w
+        return np.array([ qj,   qi,  -qk,  qw], dtype=float)
+
     ##############################################
     # 4) Send a one-time command (real-time control) 
     ##############################################
@@ -134,12 +140,15 @@ class Pixhawk_Control(object):
         cmd_thrust: scalar in Newtons
         """
         # Convert to roll, pitch, yaw
-        # roll, pitch, yaw = self.quaternion_to_euler([cmd_q[0], cmd_q[1], cmd_q[2], cmd_q[3]])
-        # scale thrust from N to 0..1
+        # scale thrust from N to 0....1
         thrust_01 = np.clip(cmd_thrust / self.max_thrust, 0, 1)
         # Now send
+        
         # self.send_attitude_target(master, roll, pitch, yaw, thrust_01)
-        q_wxyz = [cmd_q[3], cmd_q[0], cmd_q[1], cmd_q[2]]
+        
+        q_ned   = self.enu_to_ned_quat(cmd_q) # still [i j k w]
+        q_wxyz  = [q_ned[3], q_ned[0], q_ned[1], q_ned[2]]
+        
         self.send_attitude_target(master, q_wxyz, thrust_01)
         # Ensure time is a scalar float
         t_val = float(np.squeeze(time))
