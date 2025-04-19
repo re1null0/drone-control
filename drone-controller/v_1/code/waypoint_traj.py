@@ -78,7 +78,7 @@ class WaypointTraj(object):
         delta_t = t - self.t_start[segment_idx]
         
         x = self.points[segment_idx] + self.l_hat[segment_idx] * self.speed * delta_t
-        x_dot = self. speed * self.l_hat[segment_idx]
+        x_dot = self.speed * self.l_hat[segment_idx]
         x_ddot = np.zeros(3)
         x_dddot = np.zeros(3)
         x_ddddot = np.zeros(3)

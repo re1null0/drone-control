@@ -32,11 +32,15 @@ class Pixhawk_Control(object):
         time.sleep(1)
 
         # Optionally set GUIDED_NOGPS "GUID_OPTIONS" so it will accept attitude control
-        print("Enabling external attitude control (GUID_OPTIONS = 8)...")
+        print("Enabling external attitude control (GUID_OPTIONS = 8 - float 7)...")
         master.mav.param_set_send(
             master.target_system, master.target_component,
             b'GUID_OPTIONS',
+<<<<<<< HEAD
             float(7), # SHOULDNT THIS BE 8? IT WAS AT 7
+=======
+            float(7),
+>>>>>>> c488336e29677cacc210e39083796fefd5991e44
             mavutil.mavlink.MAV_PARAM_TYPE_INT32
         )
         time.sleep(1)

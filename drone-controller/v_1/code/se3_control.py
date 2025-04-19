@@ -111,7 +111,8 @@ class SE3Control(object):
         vel_error = state['v'] - flat_output['x_dot']
 
         # 3) Integral of position error
-        self.int_e += pos_error * dt # * 0 # simple Euler integration
+        self.int_e = np.clip(self.int_e + pos_error * dt, -0.3, 0.3)
+
 
         # print(f"error: {self.int_e}")
         # Optional: clamp/saturate self.int_e to avoid integral windup
