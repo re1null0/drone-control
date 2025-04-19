@@ -52,17 +52,17 @@ class Pixhawk_Control(object):
         time.sleep(1)
 
         # Arm the motors
-        print("Arming motors...")
-        master.mav.command_long_send(
-            master.target_system, master.target_component,
-            mavutil.mavlink.MAV_CMD_COMPONENT_ARM_DISARM,
-            0,
-            1, 0, 0, 0, 0, 0, 0
-        )
-        master.motors_armed_wait()
-        print("Motors armed!")
+        # print("Arming motors...")
+        # master.mav.command_long_send(
+        #     master.target_system, master.target_component,
+        #     mavutil.mavlink.MAV_CMD_COMPONENT_ARM_DISARM,
+        #     0,
+        #     1, 0, 0, 0, 0, 0, 0
+        # )
+        # master.motors_armed_wait()
+        # print("Motors armed!")
 
-        time.sleep(4)
+        # time.sleep(4)
         return master
 
     ##############################################
@@ -144,12 +144,13 @@ class Pixhawk_Control(object):
         thrust_01 = np.clip(cmd_thrust / self.max_thrust, 0, 1)
         # Now send
         
-        # self.send_attitude_target(master, roll, pitch, yaw, thrust_01)
+        # q_ned   = self.enu_to_ned_quat(cmd_q) # still [i j k w]
+        # q_wxyz  = [q_ned[3], q_ned[0], q_ned[1], q_ned[2]]
         
-        q_ned   = self.enu_to_ned_quat(cmd_q) # still [i j k w]
-        q_wxyz  = [q_ned[3], q_ned[0], q_ned[1], q_ned[2]]
-        
-        self.send_attitude_target(master, q_wxyz, thrust_01)
+        # self.send_attitude_target(master, q_wxyz, thrust_01)
+
+        self.send_attitude_target(master, cmd_q, thrust_01)
+
         # Ensure time is a scalar float
         t_val = float(np.squeeze(time))
 
