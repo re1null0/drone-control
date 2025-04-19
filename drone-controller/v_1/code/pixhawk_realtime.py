@@ -36,7 +36,7 @@ class Pixhawk_Control(object):
         master.mav.param_set_send(
             master.target_system, master.target_component,
             b'GUID_OPTIONS',
-            float(8), # SHOULDNT THIS BE 8? IT WAS AT 7
+            float(7), # SHOULDNT THIS BE 8? IT WAS AT 7
             mavutil.mavlink.MAV_PARAM_TYPE_INT32
         )
         time.sleep(1)
@@ -52,17 +52,17 @@ class Pixhawk_Control(object):
         time.sleep(1)
 
         # Arm the motors
-        # print("Arming motors...")
-        # master.mav.command_long_send(
-        #     master.target_system, master.target_component,
-        #     mavutil.mavlink.MAV_CMD_COMPONENT_ARM_DISARM,
-        #     0,
-        #     1, 0, 0, 0, 0, 0, 0
-        # )
-        # master.motors_armed_wait()
-        # print("Motors armed!")
+        print("Arming motors...")
+        master.mav.command_long_send(
+            master.target_system, master.target_component,
+            mavutil.mavlink.MAV_CMD_COMPONENT_ARM_DISARM,
+            0,
+            1, 0, 0, 0, 0, 0, 0
+        )
+        master.motors_armed_wait()
+        print("Motors armed!")
 
-        # time.sleep(4)
+        time.sleep(4)
         return master
 
     ##############################################

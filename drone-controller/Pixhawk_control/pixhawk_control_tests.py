@@ -6,15 +6,33 @@ from flightsim.drone_params import quad_params
 from pymavlink import mavutil
 
 pix = Pixhawk_Control(quad_params)
-master = pix.connect_and_setup()
+connection_string='/dev/ttyACM0'
+baud=115200
+
+print(f"Connecting to {connection_string}...")
+master = mavutil.mavlink_connection(connection_string, baud=baud)
+master.wait_heartbeat()
+print("Heartbeat received "
+    f"(system {master.target_system}, component {master.target_component})")
+
+# Disable arming checks
+print("Disabling arming checks...")
+master.mav.param_set_send(
+    master.target_system, master.target_component,
+    b'ARMING_CHECK',
+    float(0),
+    mavutil.mavlink.MAV_PARAM_TYPE_INT32
+)
+time.sleep(1)
+
 
 now = 0
 t0 = time.time()
 
-# while now < 3:
-#     print("All motors")
-#     now = time.time() - t0
-#     pix.send_attitude_target(master, [1, 0, 0, 0], 0.7)
+while now < 3:
+    print("All motors")
+    now = time.time() - t0
+    pix.send_attitude_target(master, [1, 0, 0, 0], 0.7)
 
 while now < 6:
     print(f"motor index{0}")
