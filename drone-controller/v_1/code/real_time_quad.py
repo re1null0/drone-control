@@ -3,16 +3,16 @@ import rospy
 import numpy as np
 import time
 
-from pixhawk_realtime import Pixhawk_Control
-import waypoint_traj
-from se3_control import SE3Control
+from Pixhawk_control.pixhawk_realtime import MotorController
+from v_1.code.waypoint_traj import WaypointTraj
+from v_1.code.se3_control import SE3Control
 from flightsim.drone_params import quad_params  # holds mass, Ixx, etc.
 
 # If you want to track a reference path, you can import your trajectory:
 # from waypoint_traj import WaypointTraj
 
 # The OdomReceiver you wrote:
-from realtime_capture import OdomReceiver
+from v_1.util.realtime_capture import OdomReceiver
 
 def real_time_control_loop():
     rospy.init_node('real_time_controller', anonymous=True)
@@ -28,8 +28,9 @@ def real_time_control_loop():
     controller = SE3Control(quad_params)
 
     # 3) Connect to the Pixhawk (MAVLink) 
-    pix = Pixhawk_Control(quad_params)
-    master = pix.connect_and_setup()
+    pix = MotorController(quad_params)
+    pix.arm_vehicle()
+    # master = pix.connect_and_setup()
     
     points = np.array([
         [0, 0, 0],
@@ -43,7 +44,7 @@ def real_time_control_loop():
         # [0.5, -0.5, 1],
         # [-0.25, -0.5, 1.5]
         ])
-    my_traj = waypoint_traj.WaypointTraj(points)
+    my_traj = WaypointTraj(points)
     
     t0 = time.time()
 
@@ -63,12 +64,13 @@ def real_time_control_loop():
         control_input = controller.update(now, current_state, flat_output)
 
         # 4) Send that command to the Pixhawk
-        cmd_thrust = control_input['cmd_thrust']  # in Newtons
-        cmd_q      = control_input['cmd_q']       # [i, j, k, w]
-        
+        # cmd_thrust = control_input['cmd_thrust']  # in Newtons
+        # cmd_q      = control_input['cmd_q']       # [i, j, k, w]
+        cmd_motor_speeds = control_input['cmd_motor_speeds']
+
         # Convert them to Euler angles + normalized thrust, and send
-        pix.send_rt_command(master, cmd_q, cmd_thrust, now, current_state, flat_output)
-        
+        # pix.send_rt_command(master, cmd_q, cmd_thrust, now, current_state, flat_output)
+        pix.send_rt_command(pix, cmd_motor_speeds, now, current_state, flat_output)
         
         # 5) Sleep to maintain loop rate
         rate.sleep()
