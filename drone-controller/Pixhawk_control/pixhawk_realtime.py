@@ -55,6 +55,29 @@ class MotorController:
             print("Safety latch released")
         else:
             print("Safety command rejected!")
+            
+    def disable_arming_checks(self):
+        """Disable arming checks through parameters"""
+        print("Disabling arming checks...")
+        
+        # Set ARMING_CHECK parameter to 0 (disable all checks)
+        self.vehicle.mav.param_set_send(
+            self.target_system,
+            self.target_component,
+            b'ARMING_CHECK',  # Parameter name
+            0,  # Parameter value (0 = disable all checks)
+            mavutil.mavlink.MAV_PARAM_TYPE_INT32  # Parameter type
+        )
+        
+        # Wait for parameter ACK
+        ack = self.vehicle.recv_match(type='PARAM_VALUE', blocking=True, timeout=5)
+        if ack and ack.param_id == b'ARMING_CHECK':
+            print(f"ARMING_CHECK set to {ack.param_value}")
+            return True
+        else:
+            print("Failed to set ARMING_CHECK parameter")
+            return False
+
     
     def arm_vehicle(self, force=True):
         """
