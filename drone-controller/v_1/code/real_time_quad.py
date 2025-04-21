@@ -29,8 +29,9 @@ def real_time_control_loop():
 
     # 3) Connect to the Pixhawk (MAVLink) 
     pix = MotorController(quad_params)
-    pix.arm_vehicle()
-    # master = pix.connect_and_setup()
+    # pix.set_GUIDED_NOGPS()
+    # pix.arm_vehicle()
+    # time.sleep(5)
     
     points = np.array([
         [0, 0, 0],
@@ -51,6 +52,10 @@ def real_time_control_loop():
     xyz_offset = [-0.00599, -0.04815, -0.2797]
 
     while not rospy.is_shutdown():
+        if pix.flightmode == "ALT_HOLD":      
+            pix.relinquish_to_pilot()
+            break
+
         now = time.time() - t0
         
         # 1) Get the current drone state from the Vicon
@@ -70,13 +75,13 @@ def real_time_control_loop():
 
         # Convert them to Euler angles + normalized thrust, and send
         # pix.send_rt_command(master, cmd_q, cmd_thrust, now, current_state, flat_output)
-        pix.send_rt_command(pix, cmd_motor_speeds, now, current_state, flat_output)
+        pix.send_rt_command(cmd_motor_speeds, now, current_state, flat_output)
         
         # 5) Sleep to maintain loop rate
         rate.sleep()
     
     # Optionally disarm upon exit
-    print("Simulation Completed.")
+    print("Flight Complete.")
     # master.mav.command_long_send(
     #     master.target_system,
     #     master.target_component,

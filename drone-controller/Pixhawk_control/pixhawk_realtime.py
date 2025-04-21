@@ -36,8 +36,27 @@ class MotorController:
         
         # Track arming state
         self.is_armed = False
+
+    def safety_off(self):
+        """
+        Clear the safety-switch latch so outputs are allowed
+        (equivalent to pressing the safety button once).
+        """
+        self.vehicle.mav.command_long_send(
+            self.target_system, self.target_component,
+            mavutil.mavlink.MAV_CMD_DO_SET_SAFETY,
+            0,
+            0,      # param1: 0 = safety OFF, 1 = safety ON
+            0,0,0,0,0,0)
+        # Wait for the ACK so we know the autopilot accepted it
+        ack = self.vehicle.recv_match(type='COMMAND_ACK',
+                                    blocking=True, timeout=2)
+        if ack and ack.result == mavutil.mavlink.MAV_RESULT_ACCEPTED:
+            print("Safety latch released")
+        else:
+            print("Safety command rejected!")
     
-    def arm_vehicle(self, force=False):
+    def arm_vehicle(self, force=True):
         """
         Arm the vehicle to allow motor operation
         
@@ -59,6 +78,7 @@ class MotorController:
             21196 if force else 0,  # Force (21196 = 0x52C4 force arming)
             0, 0, 0, 0, 0  # unused parameters
         )
+
         
         # Wait for command ACK
         ack = self.vehicle.recv_match(type='COMMAND_ACK', blocking=True, timeout=5)
@@ -75,6 +95,26 @@ class MotorController:
         else:
             print("No ACK received for arming command")
             return False
+        
+    def set_GUIDED_NOGPS(self):
+        # Optionally set GUIDED_NOGPS "GUID_OPTIONS" so it will accept attitude control
+        print("Enabling external attitude control (GUID_OPTIONS = 8)...")
+        self.vehicle.mav.param_set_send(
+            self.target_system, self.target_component,
+            b'GUID_OPTIONS',
+            float(7),
+            mavutil.mavlink.MAV_PARAM_TYPE_INT32
+        )
+
+        # Switch mode to GUIDED_NOGPS
+        print("Switching to GUIDED_NOGPS mode...")
+        mode_id = self.vehicle.mode_mapping()['GUIDED_NOGPS']
+        self.vehicle.mav.set_mode_send(
+            self.target_system,
+            mavutil.mavlink.MAV_MODE_FLAG_CUSTOM_MODE_ENABLED,
+            mode_id
+        )
+        time.sleep(1)
     
     def disarm_vehicle(self):
         """
@@ -105,7 +145,7 @@ class MotorController:
             print("Failed to disarm vehicle")
             return False
     
-    def set_motor_output(self, motor_idx, throttle_percent):
+    def set_motor_output(self, motor_idx, throttle_percent, duration=5):
         """
         Set individual motor output using DO_MOTOR_TEST command
         
@@ -136,7 +176,7 @@ class MotorController:
             motor_idx,  # param1: motor instance (1-based)
             mavutil.mavlink.MOTOR_TEST_THROTTLE_PERCENT,  # param2: throttle type
             throttle_percent,  # param3: throttle value (0-100%)
-            10,  # param4: timeout (10 seconds)
+            duration,  # param4: timeout (10 seconds)
             0, 0, 0  # unused parameters
         )
         
@@ -153,7 +193,7 @@ class MotorController:
             print("No ACK received")
             return False
         
-    def send_rt_command(self, master, cmd_motor_speeds, time, state, flat):
+    def send_rt_command(self, cmd_motor_speeds, time, state, flat):
         """
         Convert a desired quaternion & thrust [N] to
         roll/pitch/yaw in radians and a normalized thrust 0..1,
@@ -167,7 +207,7 @@ class MotorController:
         t_val = float(np.squeeze(time))
 
         for idx in range(len(cmd_motor_speeds)):
-            master.set_motor_output(idx + 1, thrust_0100[idx])
+            self.set_motor_output(idx + 1, thrust_0100[idx])
 
         np.set_printoptions(precision=3, suppress=True)
         info_line = (
@@ -180,20 +220,27 @@ class MotorController:
         )
         print(info_line)
 
-    def set_all_motors_same(self, throttle_percent):
+    def set_all_motors_same(self, throttle_percent, duration):
         """
-        Set all motors to the same throttle percentage
+        Set all motors to the same throttle percentage for a given duration
         
         Args:
             throttle_percent: Motor output value (0-100 percent)
         """
         for motor in range(1, 5):
-            self.set_motor_output(motor, throttle_percent)
-            # time.sleep(0.1)  # Small delay between commands
+            self.set_motor_output(motor, throttle_percent, duration=duration)
     
-    def stop_all_motors(self):
+    def stop_all_motors(self, duration=1):
         """Stop all motors"""
-        self.set_all_motors(0)
+        self.set_all_motors_same(20, duration)
+        # self.arm_vehicle()
+        time.sleep(5)
+        self.vehicle.mav.command_long_send(
+            self.target_system, self.target_component,
+            mavutil.mavlink.MAV_CMD_COMPONENT_ARM_DISARM,
+            0,  # confirmation
+            1, 0, 0, 0, 0, 0, 0
+        )
 
     def close(self):
         """Close the MAVLink connection"""
@@ -203,3 +250,42 @@ class MotorController:
         
         self.vehicle.close()
         print("Connection closed")
+
+
+    def relinquish_to_pilot(self):
+        """
+        • End DO_MOTOR_TEST
+        • Put FCU in a stick‑driven mode
+        • Return – pilot must arm with Tx
+        """
+        # a) send a single "all motors 0 %" test with zero timeout
+        self.vehicle.mav.command_long_send(
+            self.target_system, self.target_component,
+            mavutil.mavlink.MAV_CMD_DO_MOTOR_TEST,
+            0, 0, 0,   # all motors, throttle‑type %
+            0, 0,      # throttle 0, timeout 0 s  -> test ends immediately
+            0,0,0)
+
+        time.sleep(0.15)                 # let AP exit test state
+
+        # b) pick a mode the pilot can fly while DISARMED
+        self.vehicle.set_mode('STABILIZE')      # or 'ALT_HOLD' if you prefer
+        print("Motor‑test ended, FCU in STABILIZE – arm with Tx to fly.")
+
+
+
+    def _update_flight_mode(self):
+        """
+        Non-blocking read of the latest HEARTBEAT and extraction of the
+        human-readable mode string (e.g. 'STABILIZE', 'ALT_HOLD', …).
+        """
+        hb = self.vehicle.recv_match(type='HEARTBEAT', blocking=False)
+        if hb:
+            # convenience property that pymavlink keeps up‑to‑date
+            self.vehicle.flightmode = mavutil.mode_string_v10(hb)
+
+    @property
+    def flightmode(self):
+        """Return the last known flight-mode string, or None."""
+        self._update_flight_mode()
+        return getattr(self.vehicle, "flightmode", None)
