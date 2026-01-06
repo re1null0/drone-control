@@ -6,15 +6,42 @@
   </a>
   <img src="PATHFINDING IN MAZE.gif" width="49%">
 </p>
-<p align="center"><em>Left: Project Video; Right: Drone Simulation .gif</em></p>
-    
-    2. Custom control scripts for autonomously controlling the drone.
-    
-    3. Platform independent web page for autonomously controlling the drone. 
+<p align="center"><em>Left: **LINK** to the Project Video; Right: Drone Simulation .gif</em></p>
 
-# Run the website locally
 
-## Run frontend
+<p align="center">
+  <img src="drone-front.jpg" width="49%">
+  <img src="drone-pres.jpg" width="49%">
+</p>
+<p align="center"><em>Left: Drone front view; Right: Presentation</em></p>
+
+<p align="center">
+  <img src="Drone-poster.png" width="99%">
+</p>
+<p align="center"><em>Drone Poster</em></p>
+
+  1. Real-time autonomous control of a custom-built drone with Pixhawk and Mavlink.
+
+  2. Customized Firmware to directly control the motors from out controllers.
+
+  3. Tuned the drone with a Vicon Motion Capture system.
+  
+  4. Experimented with MPC and Geometric PID Controllers, both in sim and on the drone.
+
+  5. Autonomously detect Obstacles and navigate around them.
+  
+  6. Platform independent web page for autonomously controlling the drone. 
+
+  7. Integrate Jetson Nano Oren with ROS 2, Mavlink and Pixhawk.
+
+  8. Created a Custom Docker image to communicate with Vicon's ROS1 topics (could have also used `ros1_bridge`).
+
+
+# Instructions to run the drone
+
+## Run the website locally
+
+### Run frontend
 
 Open a terminal and cd into the drone-frontend folder
 
@@ -26,7 +53,7 @@ Start the server
 
 You can see the site live at http://localhost:4200/
 
-## Run Backend 
+### Run Backend 
 
 Open another terminal and cd into the `drone_backend` folder 
 
@@ -36,7 +63,7 @@ Run the shell script to start the backend
 
 `./run.sh`
 
-## Run Fire Simulation
+### Run Fire Simulation
 
 Open another terminala and cd into `fireRL`
 
@@ -46,7 +73,7 @@ Run this command to start the server:
 
 `uvicorn main:app --reload --host 0.0.0.0 --port 8000`
 
-## Run Camera Feed
+### Run Camera Feed
 
 Open another terminal and cd into `drone_backend`
 
@@ -58,7 +85,7 @@ Run the camera script:
 
 
     
-# How to Run SITL Gazebo Simulation
+## How to Run SITL Gazebo Simulation
 
 In one terminal, open the ardupilot folder
 
@@ -81,21 +108,21 @@ Finally, run Gazebo
 
 `gz sim -v4 -r iris_runway.sdf`
 
-# How to Run the Docker Environment - to access ROS1
+## How to Run the Docker Environment - to access ROS1
 
-## Intermediary computer (1):
+### Intermediary computer (1):
 ```
 . drone_senior_design/devel/setup.bash
 roslaunch hawk_tracking vicon_hawk.launch
 ```
 
-## Intermediary computer (2):
+### Intermediary computer (2):
 ```
 . drone_senior_design/devel/setup.bash
 rosrun hawk_tracking odom_relay.py
 ```
 
-## Jetson:
+### Jetson:
 In 2 different terminals:
 ```
 ssh riya@100.77.20.58
